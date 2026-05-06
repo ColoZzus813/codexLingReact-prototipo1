@@ -1,0 +1,187 @@
+{
+  "info": {
+    "name": "CodexLing API",
+    "description": "Coleccion basica para probar los endpoints REST del backend.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3001/api"
+    },
+    {
+      "key": "adminKey",
+      "value": "admin123"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/health"
+      }
+    },
+    {
+      "name": "Listar cursos",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/courses"
+      }
+    },
+    {
+      "name": "Obtener curso por id",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/courses/1"
+      }
+    },
+    {
+      "name": "Crear curso",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"JAVASCRIPT\",\n  \"icon\": \"fab fa-js\",\n  \"description\": \"Frontend, backend y logica web\",\n  \"page\": \"javascript\",\n  \"type\": \"javascript\"\n}"
+        },
+        "url": "{{baseUrl}}/courses"
+      }
+    },
+    {
+      "name": "Actualizar curso",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"description\": \"Backend, frontend y bases de datos\"\n}"
+        },
+        "url": "{{baseUrl}}/courses/4"
+      }
+    },
+    {
+      "name": "Eliminar curso",
+      "request": {
+        "method": "DELETE",
+        "url": "{{baseUrl}}/courses/5"
+      }
+    },
+    {
+      "name": "Registrar usuario",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Ana Perez\",\n  \"email\": \"ana@example.com\",\n  \"password\": \"123456\"\n}"
+        },
+        "url": "{{baseUrl}}/users/register"
+      }
+    },
+    {
+      "name": "Iniciar sesion",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"ana@example.com\",\n  \"password\": \"123456\"\n}"
+        },
+        "url": "{{baseUrl}}/users/login"
+      }
+    },
+    {
+      "name": "Admin login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"adminKey\": \"{{adminKey}}\"\n}"
+        },
+        "url": "{{baseUrl}}/admin/login"
+      }
+    },
+    {
+      "name": "Admin ver base de datos",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "x-admin-key",
+            "value": "{{adminKey}}"
+          }
+        ],
+        "url": "{{baseUrl}}/admin/database"
+      }
+    },
+    {
+      "name": "Admin editar curso",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "x-admin-key",
+            "value": "{{adminKey}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"description\": \"Curso editado desde administrador\"\n}"
+        },
+        "url": "{{baseUrl}}/admin/courses/1"
+      }
+    },
+    {
+      "name": "Admin editar usuario",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "x-admin-key",
+            "value": "{{adminKey}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Usuario Editado\"\n}"
+        },
+        "url": "{{baseUrl}}/admin/users/1"
+      }
+    }
+  ]
+}

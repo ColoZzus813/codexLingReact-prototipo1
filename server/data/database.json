@@ -1,0 +1,183 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Sebastian Ruiz Giraldo",
+      "email": "sebas@correo.com",
+      "password": "050de187-9770-4bc1-8c85-ae89568b0554:188ef880f5c5371eeab9b7e65938b0425251883ea0e9b1730558c7155adf4418",
+      "createdAt": "2026-05-06T17:27:46.076Z",
+      "updatedAt": "2026-05-06T17:27:46.076Z"
+    }
+  ],
+  "pythonLessons": [
+    {
+      "id": 1,
+      "title": "El Despertar del Programador",
+      "description": "Entra en el santuario de inicio para forjar tus primeras herramientas y entender las reglas de este nuevo mundo.",
+      "order": 1,
+      "levels": [
+        {
+          "id": 1,
+          "title": "Que es Python y porque es genial?",
+          "description": "Elige tu clase inicial y descubre por qué este lenguaje es el arma más versátil del reino.",
+          "content": "Plan inicial para aprender la sintaxis basica de Python.",
+          "order": 1
+        },
+        {
+          "id": 2,
+          "title": "El Inventario del Héroe",
+          "description": "Desbloquea tus primeros cofres de inventario para almacenar energía y datos vitales.",
+          "content": "Plan para practicar estructuras de control y funciones.",
+          "order": 2
+        },
+        {
+          "id": 3,
+          "title": "Identificación de Botín",
+          "description": "Identifica la rareza de los objetos que guardas: ¿son números mágicos o pergaminos de texto?",
+          "content": "Plan para aprender sobre ciclos y listas",
+          "order": 3
+        }
+      ],
+      "createdAt": "2026-05-06T00:00:00.000Z",
+      "updatedAt": "2026-05-06T17:59:30.063Z"
+    },
+    {
+      "id": 2,
+      "title": "La Encrucijada Lógica",
+      "description": "Aprende a manipular la realidad con cálculos precisos y a dictar el camino que seguirá tu código.",
+      "order": 2,
+      "levels": [
+        {
+          "id": 1,
+          "title": "Potenciadores de Combate",
+          "description": "Equipa multiplicadores de daño y suma puntos de experiencia con aritmética básica.",
+          "content": "",
+          "order": 1
+        },
+        {
+          "id": 2,
+          "title": "El Sendero del Destino",
+          "description": "Atraviesa encrucijadas críticas donde cada elección cambia el rumbo de tu script.",
+          "content": "",
+          "order": 2
+        }
+      ],
+      "createdAt": "2026-05-06T17:36:51.454Z",
+      "updatedAt": "2026-05-06T17:56:03.326Z"
+    },
+    {
+      "id": 3,
+      "title": "El Valle de la Automatización",
+      "description": "Domina el control de multitudes y el procesamiento en masa para que el sistema trabaje mientras tú descansas.",
+      "order": 3,
+      "levels": [
+        {
+          "id": 1,
+          "title": "El Hechizo de Repetición",
+          "description": "Domina los ciclos for y while para repetir acciones automáticamente y ganar experiencia sin mover un dedo.",
+          "content": "",
+          "order": 1
+        },
+        {
+          "id": 2,
+          "title": "Gestión del Inventario",
+          "description": "Organiza tu equipo en formaciones dinámicas para gestionar múltiples elementos a la vez.",
+          "content": "",
+          "order": 2
+        }
+      ],
+      "createdAt": "2026-05-06T17:52:48.136Z",
+      "updatedAt": "2026-05-06T18:14:58.715Z"
+    },
+    {
+      "id": 4,
+      "title": "La Bóveda de Información",
+      "description": "Adéntrate en estructuras complejas donde el orden y la eficiencia son la clave para gestionar grandes tesoros de datos.",
+      "order": 4,
+      "levels": [
+        {
+          "id": 1,
+          "title": "El Bestiario Eterno",
+          "description": "",
+          "content": "Crea una base de datos de monstruos vinculando cada nombre con sus estadísticas únicas.",
+          "order": 1
+        },
+        {
+          "id": 2,
+          "title": "Reliquias de Piedra",
+          "description": "Descubre artefactos inmutables y portales que eliminan duplicados del mapa.",
+          "content": "",
+          "order": 2
+        }
+      ],
+      "createdAt": "2026-05-06T17:52:54.124Z",
+      "updatedAt": "2026-05-06T18:15:05.553Z"
+    },
+    {
+      "id": 5,
+      "title": "El Laboratorio de Alquimia",
+      "description": "Aprende a encapsular magia pura en frascos reutilizables que podrás lanzar en cualquier momento de la batalla.",
+      "order": 5,
+      "levels": [
+        {
+          "id": 1,
+          "title": "Pergaminos Reutilizables",
+          "description": "Forja hechizos personalizados que puedes invocar en cualquier batalla con una sola palabra.",
+          "content": "",
+          "order": 1
+        },
+        {
+          "id": 2,
+          "title": "El Mensajero del Reino",
+          "description": "Envía suministros a través del código y recibe botines valiosos tras completar la tarea.",
+          "content": "",
+          "order": 2
+        }
+      ],
+      "createdAt": "2026-05-06T17:53:02.903Z",
+      "updatedAt": "2026-05-06T18:15:15.453Z"
+    }
+  ],
+  "courses": [
+    {
+      "id": 1,
+      "title": "HTML",
+      "icon": "fab fa-html5",
+      "description": "Programacion enfocada en hipertexto",
+      "page": "html",
+      "type": "html",
+      "createdAt": "2026-05-06T00:00:00.000Z",
+      "updatedAt": "2026-05-06T00:00:00.000Z"
+    },
+    {
+      "id": 2,
+      "title": "PYTHON",
+      "icon": "fab fa-python",
+      "description": "IA y analisis de datos",
+      "page": "python",
+      "type": "python",
+      "createdAt": "2026-05-06T00:00:00.000Z",
+      "updatedAt": "2026-05-06T00:00:00.000Z"
+    },
+    {
+      "id": 3,
+      "title": "JAVA",
+      "icon": "fab fa-java",
+      "description": "Aplicaciones empresariales",
+      "page": "java",
+      "type": "java",
+      "createdAt": "2026-05-06T00:00:00.000Z",
+      "updatedAt": "2026-05-06T00:00:00.000Z"
+    },
+    {
+      "id": 4,
+      "title": "PHP",
+      "icon": "fab fa-php",
+      "description": "Backend y bases de datos",
+      "page": "php",
+      "type": "php",
+      "createdAt": "2026-05-06T00:00:00.000Z",
+      "updatedAt": "2026-05-06T00:00:00.000Z"
+    }
+  ]
+}
