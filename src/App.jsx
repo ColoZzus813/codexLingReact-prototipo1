@@ -61,6 +61,16 @@ function App() {
 
   return (
     <>
+      <div className="bg-pattern" aria-hidden="true"></div>
+      <div className="grid-overlay" aria-hidden="true"></div>
+      <div className="code-sky" aria-hidden="true">
+        <span>&lt;/&gt;</span>
+        <span>{`{ }`}</span>
+        <span>#</span>
+        <span>( )</span>
+        <span>;</span>
+        <span>[ ]</span>
+      </div>
       <Header 
         setPage={setPage}
         toggleMenu={() => setMenuOpen(!menuOpen)}

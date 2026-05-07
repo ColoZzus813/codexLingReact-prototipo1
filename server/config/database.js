@@ -9,6 +9,35 @@ export const databasePath = path.resolve(__dirname, "../data/database.json");
 
 const initialDatabase = {
   users: [],
+  userLevels: [
+    {
+      id: 1,
+      title: "Aprendiz",
+      description: "Primeros pasos dentro de CodexLing.",
+      minXp: 0,
+      badge: "LVL 1",
+      createdAt: "2026-05-06T00:00:00.000Z",
+      updatedAt: "2026-05-06T00:00:00.000Z"
+    },
+    {
+      id: 2,
+      title: "Explorador",
+      description: "Ya domina las bases y avanza con constancia.",
+      minXp: 100,
+      badge: "LVL 2",
+      createdAt: "2026-05-06T00:00:00.000Z",
+      updatedAt: "2026-05-06T00:00:00.000Z"
+    },
+    {
+      id: 3,
+      title: "Coder",
+      description: "Completa retos y desbloquea contenido avanzado.",
+      minXp: 250,
+      badge: "LVL 3",
+      createdAt: "2026-05-06T00:00:00.000Z",
+      updatedAt: "2026-05-06T00:00:00.000Z"
+    }
+  ],
   pythonLessons: [
     {
       id: 1,
@@ -21,6 +50,7 @@ const initialDatabase = {
           title: "Nivel basico",
           description: "Variables, print y operaciones simples.",
           content: "Plan inicial para aprender la sintaxis basica de Python.",
+          xpReward: 20,
           order: 1
         },
         {
@@ -28,6 +58,7 @@ const initialDatabase = {
           title: "Nivel intermedio",
           description: "Condicionales, ciclos y funciones.",
           content: "Plan para practicar estructuras de control y funciones.",
+          xpReward: 30,
           order: 2
         }
       ],
@@ -99,6 +130,7 @@ export async function readDatabase() {
 
   return {
     users: [],
+    userLevels: [],
     pythonLessons: [],
     courses: [],
     ...database

@@ -14,11 +14,15 @@
             --dark-purple: #3b0764;
             --neon-purple: #a855f7;
             --accent-cyan: #06b6d4;
+            --accent-amber: #f59e0b;
+            --ink-blue: #08111f;
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #1e1b4b 0%, #3b0764 50%, #581c87 100%);
+            background:
+                linear-gradient(118deg, rgba(8, 17, 31, 0.95) 0 28%, rgba(12, 74, 110, 0.38) 28% 29%, transparent 29% 61%, rgba(245, 158, 11, 0.16) 61% 62%, transparent 62%),
+                linear-gradient(156deg, #06101f 0%, #111827 44%, #220d36 72%, #06273a 100%);
             min-height: 100vh;
             color: white;
             overflow-x: hidden;
@@ -27,30 +31,120 @@
         /* Animated Background Pattern */
         .bg-pattern {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                radial-gradient(circle at 20% 50%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(6, 182, 212, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 20%, rgba(168, 85, 247, 0.1) 0%, transparent 50%);
+            inset: 0;
+            background:
+                linear-gradient(132deg, transparent 0 16%, rgba(34, 211, 238, 0.22) 16.2% 16.6%, transparent 16.8% 44%, rgba(168, 85, 247, 0.2) 44.2% 44.6%, transparent 44.8%),
+                linear-gradient(48deg, transparent 0 35%, rgba(245, 158, 11, 0.12) 35.2% 36%, transparent 36.2% 100%),
+                repeating-linear-gradient(118deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 120px);
             pointer-events: none;
             z-index: 0;
+            opacity: 0.9;
+        }
+
+        .bg-pattern::before,
+        .bg-pattern::after {
+            content: "";
+            position: absolute;
+            border: 1px solid rgba(34, 211, 238, 0.22);
+            transform: rotate(-10deg);
+        }
+
+        .bg-pattern::before {
+            width: 42vw;
+            height: 42vw;
+            min-width: 340px;
+            min-height: 340px;
+            top: -140px;
+            right: -120px;
+            box-shadow:
+                inset 0 0 0 18px rgba(34, 211, 238, 0.025),
+                inset 0 0 0 42px rgba(168, 85, 247, 0.025);
+        }
+
+        .bg-pattern::after {
+            width: 34vw;
+            height: 34vw;
+            min-width: 260px;
+            min-height: 260px;
+            left: -110px;
+            bottom: 8vh;
+            border-color: rgba(245, 158, 11, 0.18);
+            box-shadow:
+                inset 0 0 0 14px rgba(245, 158, 11, 0.025),
+                inset 0 0 0 34px rgba(34, 211, 238, 0.02);
         }
 
         .grid-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(168, 85, 247, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(168, 85, 247, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(34, 211, 238, 0.055) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(168, 85, 247, 0.055) 1px, transparent 1px),
+                linear-gradient(rgba(245, 158, 11, 0.07) 1px, transparent 1px);
+            background-size: 58px 58px, 58px 58px, 232px 232px;
             pointer-events: none;
             z-index: 1;
+            mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.38) 72%, rgba(0, 0, 0, 0.12));
+        }
+
+        .code-sky {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 2;
+            overflow: hidden;
+        }
+
+        .code-sky span {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.1);
+            font-family: 'VT323', monospace;
+            font-size: clamp(42px, 7vw, 110px);
+            line-height: 1;
+            transform: rotate(-12deg);
+            text-shadow: 0 0 34px rgba(34, 211, 238, 0.16);
+            user-select: none;
+        }
+
+        .code-sky span:nth-child(1) {
+            top: 16vh;
+            left: 5vw;
+            color: rgba(34, 211, 238, 0.12);
+        }
+
+        .code-sky span:nth-child(2) {
+            top: 9vh;
+            right: 18vw;
+            color: rgba(168, 85, 247, 0.12);
+            transform: rotate(9deg);
+        }
+
+        .code-sky span:nth-child(3) {
+            top: 50vh;
+            right: 7vw;
+            color: rgba(245, 158, 11, 0.13);
+            transform: rotate(-18deg);
+        }
+
+        .code-sky span:nth-child(4) {
+            bottom: 14vh;
+            left: 14vw;
+            color: rgba(16, 185, 129, 0.1);
+            transform: rotate(12deg);
+        }
+
+        .code-sky span:nth-child(5) {
+            bottom: 8vh;
+            right: 28vw;
+            color: rgba(244, 114, 182, 0.1);
+            transform: rotate(-5deg);
+        }
+
+        .code-sky span:nth-child(6) {
+            top: 34vh;
+            left: 42vw;
+            color: rgba(255, 255, 255, 0.075);
+            transform: rotate(15deg);
         }
 
         /* Header */
@@ -270,6 +364,23 @@
             gap: 8px;
         }
 
+        .admin-section-title {
+            display: grid;
+            gap: 6px;
+            color: rgba(255, 255, 255, 0.84);
+            font-size: 14px;
+        }
+
+        .admin-section-title strong {
+            color: white;
+            font-size: 15px;
+        }
+
+        .admin-section-title span {
+            color: rgba(255, 255, 255, 0.58);
+            font-size: 12px;
+        }
+
         .admin-switch button,
         .admin-link,
         .admin-record-header button {
@@ -297,6 +408,48 @@
         .admin-list {
             display: grid;
             gap: 14px;
+        }
+
+        .admin-course-workspace {
+            display: grid;
+            grid-template-columns: minmax(180px, 230px) minmax(0, 1fr);
+            gap: 14px;
+            align-items: start;
+        }
+
+        .admin-course-selector,
+        .admin-course-editor {
+            display: grid;
+            gap: 12px;
+        }
+
+        .admin-course-options {
+            display: grid;
+            gap: 8px;
+        }
+
+        .admin-course-options button {
+            width: 100%;
+            display: grid;
+            gap: 4px;
+            text-align: left;
+            padding: 10px;
+            border: 1px solid rgba(168, 85, 247, 0.28);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            cursor: pointer;
+        }
+
+        .admin-course-options button span {
+            color: rgba(255, 255, 255, 0.58);
+            font-size: 12px;
+        }
+
+        .admin-course-options button.active,
+        .admin-course-options button:hover {
+            border-color: #60a5fa;
+            background: rgba(37, 99, 235, 0.24);
         }
 
         .admin-record {
@@ -346,6 +499,11 @@
             border-color: rgba(34, 211, 238, 0.35);
         }
 
+        .python-admin-section {
+            display: grid;
+            gap: 14px;
+        }
+
         .level-admin-list {
             display: grid;
             gap: 12px;
@@ -364,6 +522,12 @@
 
         .level-admin-record.new-level {
             border-style: dashed;
+        }
+
+        @media (max-width: 720px) {
+            .admin-course-workspace {
+                grid-template-columns: 1fr;
+            }
         }
 
         .lesson-plan {

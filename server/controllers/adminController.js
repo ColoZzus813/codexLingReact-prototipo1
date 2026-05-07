@@ -9,6 +9,11 @@ import {
   updatePythonLesson,
   updatePythonLevel
 } from "../models/pythonLessonModel.js";
+import {
+  createUserLevel,
+  deleteUserLevel,
+  updateUserLevel
+} from "../models/userLevelModel.js";
 import { deleteUser, findAllPublicUsers, updateUser } from "../models/userModel.js";
 import { ApiError } from "../utils/ApiError.js";
 
@@ -111,6 +116,49 @@ export async function deleteAdminUser(req, res, next) {
 
     if (!wasDeleted) {
       throw new ApiError(404, "Usuario no encontrado.");
+    }
+
+    res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function createAdminUserLevel(req, res, next) {
+  try {
+    const level = await createUserLevel(req.body);
+    res.status(201).json({
+      message: "Nivel de experiencia creado correctamente.",
+      data: level
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function updateAdminUserLevel(req, res, next) {
+  try {
+    const level = await updateUserLevel(parseId(req.params.levelId), req.body);
+
+    if (!level) {
+      throw new ApiError(404, "Nivel de experiencia no encontrado.");
+    }
+
+    res.json({
+      message: "Nivel de experiencia actualizado correctamente.",
+      data: level
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function deleteAdminUserLevel(req, res, next) {
+  try {
+    const wasDeleted = await deleteUserLevel(parseId(req.params.levelId));
+
+    if (!wasDeleted) {
+      throw new ApiError(404, "Nivel de experiencia no encontrado.");
     }
 
     res.status(204).send();

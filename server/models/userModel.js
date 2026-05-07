@@ -1,5 +1,6 @@
 import { createHash, randomUUID, timingSafeEqual } from "node:crypto";
 import { readDatabase, writeDatabase } from "../config/database.js";
+import { resolveUserLevel } from "./userLevelModel.js";
 
 export function hashPassword(password, salt = randomUUID()) {
   const hash = createHash("sha256").update(`${salt}:${password}`).digest("hex");
@@ -13,9 +14,53 @@ function verifyPassword(password, storedPassword) {
   return timingSafeEqual(Buffer.from(candidateHash), Buffer.from(originalHash));
 }
 
-function publicUser(user) {
+function levelKey(lessonId, levelId) {
+  return `${lessonId}:${levelId}`;
+}
+
+function normalizeUserProgress(user) {
+  return {
+    experience: Number(user.experience) || 0,
+    completedPythonLevels: Array.isArray(user.completedPythonLevels)
+      ? user.completedPythonLevels
+      : []
+  };
+}
+
+function totalPythonLevels(pythonLessons = []) {
+  return pythonLessons.reduce((total, lesson) => total + (lesson.levels?.length || 0), 0);
+}
+
+function buildProfile(user, database) {
+  const progress = normalizeUserProgress(user);
+  const { currentLevel, nextLevel } = resolveUserLevel(progress.experience, database.userLevels);
+  const currentMinXp = Number(currentLevel?.minXp || 0);
+  const nextMinXp = Number(nextLevel?.minXp || currentMinXp);
+  const levelRange = Math.max(nextMinXp - currentMinXp, 1);
+  const levelProgress = nextLevel
+    ? Math.min(100, Math.round(((progress.experience - currentMinXp) / levelRange) * 100))
+    : 100;
+
+  return {
+    experience: progress.experience,
+    completedPythonLevels: progress.completedPythonLevels,
+    completedPythonLevelsCount: progress.completedPythonLevels.length,
+    totalPythonLevels: totalPythonLevels(database.pythonLessons),
+    currentLevel,
+    nextLevel,
+    xpToNextLevel: nextLevel ? Math.max(nextMinXp - progress.experience, 0) : 0,
+    levelProgress
+  };
+}
+
+function publicUser(user, database = { userLevels: [], pythonLessons: [] }) {
   const safeUser = { ...user };
   delete safeUser.password;
+  const progress = normalizeUserProgress(user);
+
+  safeUser.experience = progress.experience;
+  safeUser.completedPythonLevels = progress.completedPythonLevels;
+  safeUser.profile = buildProfile(safeUser, database);
   return safeUser;
 }
 
@@ -38,6 +83,8 @@ export async function createUser(userData) {
     name: userData.name,
     email,
     password: hashPassword(userData.password),
+    experience: 0,
+    completedPythonLevels: [],
     createdAt: now,
     updatedAt: now
   };
@@ -45,7 +92,7 @@ export async function createUser(userData) {
   database.users.push(user);
   await writeDatabase(database);
 
-  return { user: publicUser(user) };
+  return { user: publicUser(user, database) };
 }
 
 export async function loginUser(credentials) {
@@ -57,12 +104,12 @@ export async function loginUser(credentials) {
     return null;
   }
 
-  return publicUser(user);
+  return publicUser(user, database);
 }
 
 export async function findAllPublicUsers() {
   const database = await readDatabase();
-  return database.users.map(publicUser);
+  return database.users.map((user) => publicUser(user, database));
 }
 
 export async function updateUser(id, userData) {
@@ -98,7 +145,7 @@ export async function updateUser(id, userData) {
   database.users[index] = updatedUser;
   await writeDatabase(database);
 
-  return { user: publicUser(updatedUser) };
+  return { user: publicUser(updatedUser, database) };
 }
 
 export async function deleteUser(id) {
@@ -112,4 +159,49 @@ export async function deleteUser(id) {
   database.users.splice(index, 1);
   await writeDatabase(database);
   return true;
+}
+
+export async function completePythonLevel(userId, lessonId, levelId) {
+  const database = await readDatabase();
+  const userIndex = database.users.findIndex((user) => user.id === userId);
+
+  if (userIndex === -1) {
+    return null;
+  }
+
+  const lesson = database.pythonLessons.find((currentLesson) => currentLesson.id === lessonId);
+  const level = lesson?.levels?.find((currentLevel) => currentLevel.id === levelId);
+
+  if (!lesson || !level) {
+    return { error: "LEVEL_NOT_FOUND" };
+  }
+
+  const completedKey = levelKey(lessonId, levelId);
+  const user = database.users[userIndex];
+  const progress = normalizeUserProgress(user);
+
+  if (progress.completedPythonLevels.includes(completedKey)) {
+    return {
+      user: publicUser(user, database),
+      alreadyCompleted: true,
+      xpEarned: 0
+    };
+  }
+
+  const xpEarned = Number(level.xpReward ?? lesson.xpReward ?? 10) || 0;
+  const updatedUser = {
+    ...user,
+    experience: progress.experience + xpEarned,
+    completedPythonLevels: [...progress.completedPythonLevels, completedKey],
+    updatedAt: new Date().toISOString()
+  };
+
+  database.users[userIndex] = updatedUser;
+  await writeDatabase(database);
+
+  return {
+    user: publicUser(updatedUser, database),
+    alreadyCompleted: false,
+    xpEarned
+  };
 }

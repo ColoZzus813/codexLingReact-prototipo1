@@ -3,15 +3,18 @@ import {
   adminLogin,
   createAdminPythonLesson,
   createAdminPythonLevel,
+  createAdminUserLevel,
   deleteAdminCourse,
   deleteAdminPythonLesson,
   deleteAdminPythonLevel,
   deleteAdminUser,
+  deleteAdminUserLevel,
   getDatabase,
   updateAdminCourse,
   updateAdminPythonLesson,
   updateAdminPythonLevel,
-  updateAdminUser
+  updateAdminUser,
+  updateAdminUserLevel
 } from "../controllers/adminController.js";
 import { requireAdmin } from "../middlewares/requireAdmin.js";
 import { validatePartialCourse } from "../middlewares/validateCourse.js";
@@ -22,6 +25,7 @@ import {
   validatePartialLevel
 } from "../middlewares/validatePythonLesson.js";
 import { validatePartialUser } from "../middlewares/validateUser.js";
+import { validatePartialUserLevel, validateUserLevel } from "../middlewares/validateUserLevel.js";
 
 const router = Router();
 
@@ -31,6 +35,9 @@ router.put("/courses/:id", requireAdmin, validatePartialCourse, updateAdminCours
 router.delete("/courses/:id", requireAdmin, deleteAdminCourse);
 router.put("/users/:id", requireAdmin, validatePartialUser, updateAdminUser);
 router.delete("/users/:id", requireAdmin, deleteAdminUser);
+router.post("/user-levels", requireAdmin, validateUserLevel, createAdminUserLevel);
+router.put("/user-levels/:levelId", requireAdmin, validatePartialUserLevel, updateAdminUserLevel);
+router.delete("/user-levels/:levelId", requireAdmin, deleteAdminUserLevel);
 router.post("/python-lessons", requireAdmin, validateLesson, createAdminPythonLesson);
 router.put("/python-lessons/:lessonId", requireAdmin, validatePartialLesson, updateAdminPythonLesson);
 router.delete("/python-lessons/:lessonId", requireAdmin, deleteAdminPythonLesson);

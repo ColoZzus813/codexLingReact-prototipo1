@@ -16,9 +16,8 @@ function validatePayload(body, requiredTitle = true) {
   const payload = {
     title: normalizeText(body.title),
     description: normalizeText(body.description),
-    content: normalizeText(body.content),
-    xpReward: normalizeNumber(body.xpReward),
-    order: normalizeNumber(body.order)
+    minXp: normalizeNumber(body.minXp),
+    badge: normalizeText(body.badge)
   };
   const errors = [];
 
@@ -30,12 +29,8 @@ function validatePayload(body, requiredTitle = true) {
     errors.push("title debe ser texto.");
   }
 
-  if (payload.order !== undefined && (!Number.isInteger(payload.order) || payload.order <= 0)) {
-    errors.push("order debe ser un numero entero positivo.");
-  }
-
-  if (payload.xpReward !== undefined && (!Number.isInteger(payload.xpReward) || payload.xpReward < 0)) {
-    errors.push("xpReward debe ser un numero entero mayor o igual a 0.");
+  if (payload.minXp !== undefined && (!Number.isInteger(payload.minXp) || payload.minXp < 0)) {
+    errors.push("minXp debe ser un numero entero mayor o igual a 0.");
   }
 
   return {
@@ -46,11 +41,11 @@ function validatePayload(body, requiredTitle = true) {
   };
 }
 
-export function validateLesson(req, _res, next) {
+export function validateUserLevel(req, _res, next) {
   const { payload, errors } = validatePayload(req.body);
 
   if (errors.length > 0) {
-    next(new ApiError(400, "Datos invalidos para crear la leccion.", errors));
+    next(new ApiError(400, "Datos invalidos para crear el nivel de usuario.", errors));
     return;
   }
 
@@ -58,7 +53,7 @@ export function validateLesson(req, _res, next) {
   next();
 }
 
-export function validatePartialLesson(req, _res, next) {
+export function validatePartialUserLevel(req, _res, next) {
   const { payload, errors } = validatePayload(req.body, false);
 
   if (Object.keys(payload).length === 0) {
@@ -66,13 +61,10 @@ export function validatePartialLesson(req, _res, next) {
   }
 
   if (errors.length > 0) {
-    next(new ApiError(400, "Datos invalidos para actualizar la leccion.", errors));
+    next(new ApiError(400, "Datos invalidos para actualizar el nivel de usuario.", errors));
     return;
   }
 
   req.body = payload;
   next();
 }
-
-export const validateLevel = validateLesson;
-export const validatePartialLevel = validatePartialLesson;

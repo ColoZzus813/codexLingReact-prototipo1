@@ -27,6 +27,7 @@ export async function createPythonLesson(lessonData) {
     id: nextId(database.pythonLessons),
     title: lessonData.title,
     description: lessonData.description || "",
+    xpReward: Number(lessonData.xpReward) || 0,
     order: Number(lessonData.order) || database.pythonLessons.length + 1,
     levels: [],
     createdAt: now,
@@ -50,6 +51,10 @@ export async function updatePythonLesson(id, lessonData) {
     ...database.pythonLessons[index],
     ...lessonData,
     id,
+    xpReward:
+      lessonData.xpReward !== undefined
+        ? Number(lessonData.xpReward)
+        : database.pythonLessons[index].xpReward,
     order: lessonData.order !== undefined ? Number(lessonData.order) : database.pythonLessons[index].order,
     updatedAt: new Date().toISOString()
   };
@@ -85,6 +90,7 @@ export async function createPythonLevel(lessonId, levelData) {
     title: levelData.title,
     description: levelData.description || "",
     content: levelData.content || "",
+    xpReward: Number(levelData.xpReward) || Number(lesson.xpReward) || 10,
     order: Number(levelData.order) || lesson.levels.length + 1
   };
 
@@ -112,6 +118,10 @@ export async function updatePythonLevel(lessonId, levelId, levelData) {
     ...lesson.levels[index],
     ...levelData,
     id: levelId,
+    xpReward:
+      levelData.xpReward !== undefined
+        ? Number(levelData.xpReward)
+        : lesson.levels[index].xpReward,
     order: levelData.order !== undefined ? Number(levelData.order) : lesson.levels[index].order
   };
   lesson.updatedAt = new Date().toISOString();

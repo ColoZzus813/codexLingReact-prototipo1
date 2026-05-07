@@ -21,6 +21,10 @@ function readProgress() {
 function PythonCourse({ setPage }) {
   const [lessons, setLessons] = useState([]);
   const [progress, setProgress] = useState(readProgress);
+  const [currentUser, setCurrentUser] = useState(() => {
+    const savedUser = localStorage.getItem("codexling-user");
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
   const [activeLessonId, setActiveLessonId] = useState(null);
   const [activeLevelId, setActiveLevelId] = useState(null);
   const [message, setMessage] = useState("");
@@ -41,6 +45,25 @@ function PythonCourse({ setPage }) {
         setLessons([]);
         setMessage("No se pudieron cargar las lecciones. Revisa que el backend este encendido.");
       });
+  }, []);
+
+  useEffect(() => {
+    if (!currentUser) {
+      return;
+    }
+
+    setProgress({
+      completedLevels: currentUser.completedPythonLevels || currentUser.profile?.completedPythonLevels || []
+    });
+  }, [currentUser]);
+
+  useEffect(() => {
+    const syncUser = (event) => {
+      setCurrentUser(event.detail);
+    };
+
+    window.addEventListener("codexling-user-updated", syncUser);
+    return () => window.removeEventListener("codexling-user-updated", syncUser);
   }, []);
 
   const completedLevelKeys = progress.completedLevels || [];
@@ -102,12 +125,41 @@ function PythonCourse({ setPage }) {
     setMessage("");
   };
 
-  const completeLevel = () => {
+  const completeLevel = async () => {
     if (!activeLesson || !activeLevel || isLevelCompleted(activeLesson.id, activeLevel.id)) {
       return;
     }
 
     const completedKey = levelKey(activeLesson.id, activeLevel.id);
+    let earnedMessage = "Apartado completado localmente. Inicia sesion para guardar XP en tu perfil.";
+
+    if (currentUser?.id) {
+      try {
+        const response = await fetch(`${API_URL}/users/${currentUser.id}/progress/python-levels`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            lessonId: activeLesson.id,
+            levelId: activeLevel.id
+          })
+        });
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result?.error?.message || "No se pudo guardar el progreso.");
+        }
+
+        const updatedUser = result.data;
+        setCurrentUser(updatedUser);
+        localStorage.setItem("codexling-user", JSON.stringify(updatedUser));
+        window.dispatchEvent(new CustomEvent("codexling-user-updated", { detail: updatedUser }));
+        earnedMessage = result.message;
+      } catch (error) {
+        setMessage(error.message);
+        return;
+      }
+    }
+
     const newProgress = {
       completedLevels: [...completedLevelKeys, completedKey]
     };
@@ -120,11 +172,11 @@ function PythonCourse({ setPage }) {
 
     if (nextLevel) {
       setActiveLevelId(nextLevel.id);
-      setMessage("Nivel completado. Se desbloqueo el siguiente apartado.");
+      setMessage(`${earnedMessage} Se desbloqueo el siguiente apartado.`);
       return;
     }
 
-    setMessage("Leccion completada. Se desbloqueo la siguiente leccion.");
+    setMessage(`${earnedMessage} Se desbloqueo la siguiente leccion.`);
   };
 
   const resetProgress = () => {
@@ -214,6 +266,7 @@ function PythonCourse({ setPage }) {
                     <span>Apartado {activeLevel.order}</span>
                     <h3>{activeLevel.title}</h3>
                     <p>{activeLevel.description}</p>
+                    <div className="level-xp-chip">+{activeLevel.xpReward ?? activeLesson.xpReward ?? 10} XP</div>
                     {activeLevel.content && <div className="level-content-box">{activeLevel.content}</div>}
                     <button
                       className="complete-level-button"

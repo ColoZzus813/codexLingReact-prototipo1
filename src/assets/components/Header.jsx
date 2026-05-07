@@ -30,9 +30,21 @@ function Header({
   const [currentUser, setCurrentUser] = useState(null);
   const [adminKey, setAdminKey] = useState("");
   const [adminAuthed, setAdminAuthed] = useState(false);
-  const [adminData, setAdminData] = useState({ courses: [], users: [], pythonLessons: [] });
+  const [adminData, setAdminData] = useState({
+    courses: [],
+    users: [],
+    pythonLessons: [],
+    userLevels: []
+  });
   const [adminSection, setAdminSection] = useState("courses");
-  const [newLesson, setNewLesson] = useState({ title: "", description: "", order: "" });
+  const [selectedCourseId, setSelectedCourseId] = useState("");
+  const [newLesson, setNewLesson] = useState({ title: "", description: "", xpReward: "", order: "" });
+  const [newUserLevel, setNewUserLevel] = useState({
+    title: "",
+    description: "",
+    minXp: "",
+    badge: ""
+  });
   const [newLevelByLesson, setNewLevelByLesson] = useState({});
   const [formData, setFormData] = useState({
     name: "",
@@ -62,6 +74,30 @@ function Header({
         });
     }
   }, []);
+
+  useEffect(() => {
+    const syncUser = (event) => {
+      setCurrentUser(event.detail);
+    };
+
+    window.addEventListener("codexling-user-updated", syncUser);
+    return () => window.removeEventListener("codexling-user-updated", syncUser);
+  }, []);
+
+  useEffect(() => {
+    if (adminData.courses.length === 0) {
+      setSelectedCourseId("");
+      return;
+    }
+
+    const selectedCourseExists = adminData.courses.some(
+      (course) => String(course.id) === String(selectedCourseId)
+    );
+
+    if (!selectedCourseExists) {
+      setSelectedCourseId(String(adminData.courses[0].id));
+    }
+  }, [adminData.courses, selectedCourseId]);
 
   const toggleSearch = () => {
     setShowSearch(!showSearch);
@@ -176,7 +212,8 @@ function Header({
   const handleAdminLogout = () => {
     setAdminAuthed(false);
     setAdminKey("");
-    setAdminData({ courses: [], users: [], pythonLessons: [] });
+    setAdminData({ courses: [], users: [], pythonLessons: [], userLevels: [] });
+    setSelectedCourseId("");
     localStorage.removeItem("codexling-admin-key");
     setAuthMessage("Administrador desconectado.");
   };
@@ -260,6 +297,7 @@ function Header({
         title: "",
         description: "",
         content: "",
+        xpReward: "",
         order: "",
         ...currentLevels[lessonId],
         [field]: value
@@ -280,7 +318,7 @@ function Header({
         body: JSON.stringify(newLesson)
       });
       setAuthMessage(result.message);
-      setNewLesson({ title: "", description: "", order: "" });
+      setNewLesson({ title: "", description: "", xpReward: "", order: "" });
       await fetchAdminData();
     } catch (error) {
       setAuthMessage(error.message);
@@ -298,6 +336,7 @@ function Header({
         body: JSON.stringify({
           title: lesson.title,
           description: lesson.description,
+          xpReward: lesson.xpReward,
           order: lesson.order
         })
       });
@@ -336,7 +375,7 @@ function Header({
       setAuthMessage(result.message);
       setNewLevelByLesson((currentLevels) => ({
         ...currentLevels,
-        [lessonId]: { title: "", description: "", content: "", order: "" }
+        [lessonId]: { title: "", description: "", content: "", xpReward: "", order: "" }
       }));
       await fetchAdminData();
     } catch (error) {
@@ -356,6 +395,7 @@ function Header({
           title: level.title,
           description: level.description,
           content: level.content,
+          xpReward: level.xpReward,
           order: level.order
         })
       });
@@ -379,6 +419,409 @@ function Header({
     }
   };
 
+  const createUserLevel = async (event) => {
+    event.preventDefault();
+
+    try {
+      const result = await requestJson("/admin/user-levels", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-key": adminKey
+        },
+        body: JSON.stringify(newUserLevel)
+      });
+      setAuthMessage(result.message);
+      setNewUserLevel({ title: "", description: "", minXp: "", badge: "" });
+      await fetchAdminData();
+    } catch (error) {
+      setAuthMessage(error.message);
+    }
+  };
+
+  const saveUserLevel = async (level) => {
+    try {
+      const result = await requestJson(`/admin/user-levels/${level.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-key": adminKey
+        },
+        body: JSON.stringify({
+          title: level.title,
+          description: level.description,
+          minXp: level.minXp,
+          badge: level.badge
+        })
+      });
+      setAuthMessage(result.message);
+      await fetchAdminData();
+    } catch (error) {
+      setAuthMessage(error.message);
+    }
+  };
+
+  const deleteUserLevel = async (levelId) => {
+    try {
+      await requestJson(`/admin/user-levels/${levelId}`, {
+        method: "DELETE",
+        headers: { "x-admin-key": adminKey }
+      });
+      setAuthMessage("Nivel de experiencia eliminado correctamente.");
+      await fetchAdminData();
+    } catch (error) {
+      setAuthMessage(error.message);
+    }
+  };
+
+  const renderAdminActions = () => (
+    <div className="admin-actions">
+      <div className="admin-switch">
+        <button
+          className={adminSection === "courses" ? "active" : ""}
+          type="button"
+          onClick={() => setAdminSection("courses")}
+        >
+          Cursos
+        </button>
+        <button
+          className={adminSection === "users" ? "active" : ""}
+          type="button"
+          onClick={() => setAdminSection("users")}
+        >
+          Usuarios
+        </button>
+        <button
+          className={adminSection === "userLevels" ? "active" : ""}
+          type="button"
+          onClick={() => setAdminSection("userLevels")}
+        >
+          Niveles XP
+        </button>
+      </div>
+      <button className="admin-link" type="button" onClick={() => fetchAdminData()}>
+        Actualizar
+      </button>
+      <button className="admin-link danger" type="button" onClick={handleAdminLogout}>
+        Salir admin
+      </button>
+    </div>
+  );
+
+  const renderPythonLessonManager = () => (
+    <div className="python-admin-section">
+      <div className="admin-section-title">
+        <strong>Contenido del curso Python</strong>
+        <span>Lecciones y niveles</span>
+      </div>
+
+      <form className="admin-record" onSubmit={createLesson}>
+        <div className="admin-record-header">
+          <strong>Nueva leccion de Python</strong>
+          <button type="submit">Agregar</button>
+        </div>
+        <label>
+          title
+          <input
+            value={newLesson.title}
+            onChange={(event) => setNewLesson({ ...newLesson, title: event.target.value })}
+            required
+          />
+        </label>
+        <label>
+          description
+          <input
+            value={newLesson.description}
+            onChange={(event) => setNewLesson({ ...newLesson, description: event.target.value })}
+          />
+        </label>
+        <label>
+          xp
+          <input
+            type="number"
+            min="0"
+            value={newLesson.xpReward}
+            onChange={(event) => setNewLesson({ ...newLesson, xpReward: event.target.value })}
+          />
+        </label>
+        <label>
+          orden
+          <input
+            type="number"
+            min="1"
+            value={newLesson.order}
+            onChange={(event) => setNewLesson({ ...newLesson, order: event.target.value })}
+          />
+        </label>
+      </form>
+
+      <div className="admin-list">
+        {adminData.pythonLessons.map((lesson) => (
+          <div className="admin-record python-admin-record" key={`python-lesson-${lesson.id}`}>
+            <div className="admin-record-header">
+              <strong>Leccion {lesson.id}</strong>
+              <div>
+                <button type="button" onClick={() => saveLesson(lesson)}>
+                  Guardar
+                </button>
+                <button type="button" onClick={() => deleteLesson(lesson.id)}>
+                  Eliminar
+                </button>
+              </div>
+            </div>
+            {["title", "description", "xpReward", "order"].map((field) => (
+              <label key={field}>
+                {adminFieldLabels[field] || field}
+                <input
+                  type={field === "order" || field === "xpReward" ? "number" : "text"}
+                  min={field === "order" ? "1" : field === "xpReward" ? "0" : undefined}
+                  value={lesson[field] || ""}
+                  onChange={(event) =>
+                    updateAdminField("pythonLessons", lesson.id, field, event.target.value)
+                  }
+                />
+              </label>
+            ))}
+
+            <div className="level-admin-list">
+              <strong>Niveles</strong>
+              {lesson.levels.map((level) => (
+                <div className="level-admin-record" key={`level-${lesson.id}-${level.id}`}>
+                  <div className="admin-record-header">
+                    <span>Nivel {level.id}</span>
+                    <div>
+                      <button type="button" onClick={() => saveLevel(lesson.id, level)}>
+                        Guardar
+                      </button>
+                      <button type="button" onClick={() => deleteLevel(lesson.id, level.id)}>
+                        Eliminar
+                      </button>
+                    </div>
+                  </div>
+                  {["title", "description", "content", "xpReward", "order"].map((field) => (
+                    <label key={field}>
+                      {adminFieldLabels[field] || field}
+                      <input
+                        type={field === "order" || field === "xpReward" ? "number" : "text"}
+                        min={field === "order" ? "1" : field === "xpReward" ? "0" : undefined}
+                        value={level[field] || ""}
+                        onChange={(event) =>
+                          updateLevelField(lesson.id, level.id, field, event.target.value)
+                        }
+                      />
+                    </label>
+                  ))}
+                </div>
+              ))}
+
+              <div className="level-admin-record new-level">
+                <div className="admin-record-header">
+                  <span>Nuevo nivel</span>
+                  <button type="button" onClick={() => createLevel(lesson.id)}>
+                    Agregar nivel
+                  </button>
+                </div>
+                {["title", "description", "content", "xpReward", "order"].map((field) => (
+                  <label key={field}>
+                    {adminFieldLabels[field] || field}
+                    <input
+                      type={field === "order" || field === "xpReward" ? "number" : "text"}
+                      min={field === "order" ? "1" : field === "xpReward" ? "0" : undefined}
+                      value={newLevelByLesson[lesson.id]?.[field] || ""}
+                      onChange={(event) => handleNewLevelChange(lesson.id, field, event.target.value)}
+                    />
+                  </label>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+        {adminData.pythonLessons.length === 0 && (
+          <p className="auth-message">No hay lecciones de Python guardadas.</p>
+        )}
+      </div>
+    </div>
+  );
+
+  const isPythonCourse = (course) => course?.type === "python" || course?.page === "python";
+  const adminFieldLabels = {
+    title: "Titulo",
+    icon: "Icono",
+    description: "Descripcion",
+    content: "Contenido",
+    xpReward: "XP al completar",
+    minXp: "XP minima",
+    badge: "Insignia",
+    order: "Orden",
+    page: "Pagina",
+    type: "Tipo",
+    name: "Nombre",
+    email: "Correo"
+  };
+
+  const renderUserLevelManager = () => (
+    <div className="admin-panel">
+      {renderAdminActions()}
+
+      <form className="admin-record" onSubmit={createUserLevel}>
+        <div className="admin-record-header">
+          <strong>Nuevo nivel de experiencia</strong>
+          <button type="submit">Agregar</button>
+        </div>
+        {["title", "badge", "minXp", "description"].map((field) => (
+          <label key={`new-user-level-${field}`}>
+            {adminFieldLabels[field] || field}
+            <input
+              type={field === "minXp" ? "number" : "text"}
+              min={field === "minXp" ? "0" : undefined}
+              value={newUserLevel[field] || ""}
+              onChange={(event) =>
+                setNewUserLevel({ ...newUserLevel, [field]: event.target.value })
+              }
+              required={field === "title" || field === "minXp"}
+            />
+          </label>
+        ))}
+      </form>
+
+      <div className="admin-list">
+        {[...adminData.userLevels]
+          .sort((first, second) => Number(first.minXp || 0) - Number(second.minXp || 0))
+          .map((level) => (
+            <div className="admin-record" key={`user-level-${level.id}`}>
+              <div className="admin-record-header">
+                <strong>{level.title || `Nivel ${level.id}`}</strong>
+                <div>
+                  <button type="button" onClick={() => saveUserLevel(level)}>
+                    Guardar
+                  </button>
+                  <button type="button" onClick={() => deleteUserLevel(level.id)}>
+                    Eliminar
+                  </button>
+                </div>
+              </div>
+              {["title", "badge", "minXp", "description"].map((field) => (
+                <label key={`user-level-${level.id}-${field}`}>
+                  {adminFieldLabels[field] || field}
+                  <input
+                    type={field === "minXp" ? "number" : "text"}
+                    min={field === "minXp" ? "0" : undefined}
+                    value={level[field] || ""}
+                    onChange={(event) =>
+                      updateAdminField("userLevels", level.id, field, event.target.value)
+                    }
+                  />
+                </label>
+              ))}
+            </div>
+          ))}
+        {adminData.userLevels.length === 0 && (
+          <p className="auth-message">No hay niveles de experiencia guardados.</p>
+        )}
+      </div>
+
+      {authMessage && <p className="auth-message">{authMessage}</p>}
+    </div>
+  );
+
+  const renderAdminRecord = (item, fields) => (
+    <div className="admin-record" key={`${adminSection}-${item.id}`}>
+      <div className="admin-record-header">
+        <strong>{adminSection === "courses" ? "Datos del curso" : `Usuario ${item.id}`}</strong>
+        <div>
+          <button type="button" onClick={() => saveAdminRecord(adminSection, item)}>
+            Guardar
+          </button>
+          <button type="button" onClick={() => deleteAdminRecord(adminSection, item.id)}>
+            Eliminar
+          </button>
+        </div>
+      </div>
+      {fields.map((field) => (
+        <label key={field}>
+          {adminFieldLabels[field] || field}
+          <input
+            value={item[field] || ""}
+            onChange={(event) => updateAdminField(adminSection, item.id, field, event.target.value)}
+          />
+        </label>
+      ))}
+    </div>
+  );
+
+  const renderCourseSelector = (selectedCourse) => (
+    <div className="admin-course-selector">
+      <div className="admin-section-title">
+        <strong>Cursos disponibles</strong>
+        <span>{adminData.courses.length} cursos</span>
+      </div>
+      <div className="admin-course-options">
+        {adminData.courses.map((course) => (
+          <button
+            className={String(course.id) === String(selectedCourse?.id) ? "active" : ""}
+            key={`course-option-${course.id}`}
+            type="button"
+            onClick={() => setSelectedCourseId(String(course.id))}
+          >
+            <strong>{course.title || `Curso ${course.id}`}</strong>
+            <span>{course.type || course.page || `ID ${course.id}`}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderUserProfile = () => {
+    const profile = currentUser?.profile || {};
+    const currentLevel = profile.currentLevel || { title: "Aprendiz", badge: "LVL 1", minXp: 0 };
+    const nextLevel = profile.nextLevel;
+    const completedCount = profile.completedPythonLevelsCount || 0;
+    const totalLevels = profile.totalPythonLevels || 0;
+    const levelProgress = profile.levelProgress ?? 0;
+
+    return (
+      <div className="auth-session profile-panel">
+        <div className="profile-heading">
+          <div className="profile-avatar">{currentUser.name?.charAt(0)?.toUpperCase() || "U"}</div>
+          <div>
+            <p className="auth-title">{currentUser.name}</p>
+            <p className="auth-email">{currentUser.email}</p>
+          </div>
+        </div>
+
+        <div className="profile-level-card">
+          <span>{currentLevel.badge || "Nivel actual"}</span>
+          <strong>{currentLevel.title}</strong>
+          <p>{profile.experience || 0} XP acumulada</p>
+          <div className="profile-progress">
+            <span style={{ width: `${levelProgress}%` }}></span>
+          </div>
+          <small>
+            {nextLevel
+              ? `${profile.xpToNextLevel} XP para ${nextLevel.title}`
+              : "Nivel maximo alcanzado"}
+          </small>
+        </div>
+
+        <div className="profile-stats">
+          <div>
+            <strong>{completedCount}</strong>
+            <span>Apartados completados</span>
+          </div>
+          <div>
+            <strong>{totalLevels}</strong>
+            <span>Apartados disponibles</span>
+          </div>
+        </div>
+
+        <button className="auth-submit" type="button" onClick={handleLogout}>
+          Cerrar sesion
+        </button>
+        {authMessage && <p className="auth-message">{authMessage}</p>}
+      </div>
+    );
+  };
+
   const renderAdminPanel = () => {
     if (!adminAuthed) {
       return (
@@ -400,221 +843,35 @@ function Header({
       );
     }
 
-    if (adminSection === "pythonLessons") {
-      return (
-        <div className="admin-panel">
-          <div className="admin-actions">
-            <div className="admin-switch">
-              <button type="button" onClick={() => setAdminSection("courses")}>
-                Cursos
-              </button>
-              <button type="button" onClick={() => setAdminSection("users")}>
-                Usuarios
-              </button>
-              <button className="active" type="button" onClick={() => setAdminSection("pythonLessons")}>
-                Python
-              </button>
-            </div>
-            <button className="admin-link" type="button" onClick={() => fetchAdminData()}>
-              Actualizar
-            </button>
-            <button className="admin-link danger" type="button" onClick={handleAdminLogout}>
-              Salir admin
-            </button>
-          </div>
-
-          <form className="admin-record" onSubmit={createLesson}>
-            <div className="admin-record-header">
-              <strong>Nueva leccion de Python</strong>
-              <button type="submit">Agregar</button>
-            </div>
-            <label>
-              title
-              <input
-                value={newLesson.title}
-                onChange={(event) => setNewLesson({ ...newLesson, title: event.target.value })}
-                required
-              />
-            </label>
-            <label>
-              description
-              <input
-                value={newLesson.description}
-                onChange={(event) => setNewLesson({ ...newLesson, description: event.target.value })}
-              />
-            </label>
-            <label>
-              order
-              <input
-                type="number"
-                min="1"
-                value={newLesson.order}
-                onChange={(event) => setNewLesson({ ...newLesson, order: event.target.value })}
-              />
-            </label>
-          </form>
-
-          <div className="admin-list">
-            {adminData.pythonLessons.map((lesson) => (
-              <div className="admin-record python-admin-record" key={`python-lesson-${lesson.id}`}>
-                <div className="admin-record-header">
-                  <strong>Leccion {lesson.id}</strong>
-                  <div>
-                    <button type="button" onClick={() => saveLesson(lesson)}>
-                      Guardar
-                    </button>
-                    <button type="button" onClick={() => deleteLesson(lesson.id)}>
-                      Eliminar
-                    </button>
-                  </div>
-                </div>
-                {["title", "description", "order"].map((field) => (
-                  <label key={field}>
-                    {field}
-                    <input
-                      type={field === "order" ? "number" : "text"}
-                      min={field === "order" ? "1" : undefined}
-                      value={lesson[field] || ""}
-                      onChange={(event) =>
-                        updateAdminField("pythonLessons", lesson.id, field, event.target.value)
-                      }
-                    />
-                  </label>
-                ))}
-
-                <div className="level-admin-list">
-                  <strong>Niveles</strong>
-                  {lesson.levels.map((level) => (
-                    <div className="level-admin-record" key={`level-${lesson.id}-${level.id}`}>
-                      <div className="admin-record-header">
-                        <span>Nivel {level.id}</span>
-                        <div>
-                          <button type="button" onClick={() => saveLevel(lesson.id, level)}>
-                            Guardar
-                          </button>
-                          <button type="button" onClick={() => deleteLevel(lesson.id, level.id)}>
-                            Eliminar
-                          </button>
-                        </div>
-                      </div>
-                      {["title", "description", "content", "order"].map((field) => (
-                        <label key={field}>
-                          {field}
-                          <input
-                            type={field === "order" ? "number" : "text"}
-                            min={field === "order" ? "1" : undefined}
-                            value={level[field] || ""}
-                            onChange={(event) =>
-                              updateLevelField(lesson.id, level.id, field, event.target.value)
-                            }
-                          />
-                        </label>
-                      ))}
-                    </div>
-                  ))}
-
-                  <div className="level-admin-record new-level">
-                    <div className="admin-record-header">
-                      <span>Nuevo nivel</span>
-                      <button type="button" onClick={() => createLevel(lesson.id)}>
-                        Agregar nivel
-                      </button>
-                    </div>
-                    {["title", "description", "content", "order"].map((field) => (
-                      <label key={field}>
-                        {field}
-                        <input
-                          type={field === "order" ? "number" : "text"}
-                          min={field === "order" ? "1" : undefined}
-                          value={newLevelByLesson[lesson.id]?.[field] || ""}
-                          onChange={(event) => handleNewLevelChange(lesson.id, field, event.target.value)}
-                        />
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ))}
-            {adminData.pythonLessons.length === 0 && (
-              <p className="auth-message">No hay lecciones de Python guardadas.</p>
-            )}
-          </div>
-
-          {authMessage && <p className="auth-message">{authMessage}</p>}
-        </div>
-      );
+    if (adminSection === "userLevels") {
+      return renderUserLevelManager();
     }
 
-    const collection = adminSection === "courses" ? adminData.courses : adminData.users;
-    const fields =
-      adminSection === "courses"
-        ? ["title", "icon", "description", "page", "type"]
-        : ["name", "email"];
+    const isCoursesSection = adminSection === "courses";
+    const selectedCourse =
+      adminData.courses.find((course) => String(course.id) === String(selectedCourseId)) ||
+      adminData.courses[0];
+    const collection = isCoursesSection ? (selectedCourse ? [selectedCourse] : []) : adminData.users;
+    const fields = isCoursesSection ? ["title", "icon", "description", "page", "type"] : ["name", "email"];
 
     return (
       <div className="admin-panel">
-        <div className="admin-actions">
-          <div className="admin-switch">
-            <button
-              className={adminSection === "courses" ? "active" : ""}
-              type="button"
-              onClick={() => setAdminSection("courses")}
-            >
-              Cursos
-            </button>
-            <button
-              className={adminSection === "users" ? "active" : ""}
-              type="button"
-              onClick={() => setAdminSection("users")}
-            >
-              Usuarios
-            </button>
-            <button
-              className={adminSection === "pythonLessons" ? "active" : ""}
-              type="button"
-              onClick={() => setAdminSection("pythonLessons")}
-            >
-              Python
-            </button>
-          </div>
-          <button className="admin-link" type="button" onClick={() => fetchAdminData()}>
-            Actualizar
-          </button>
-          <button className="admin-link danger" type="button" onClick={handleAdminLogout}>
-            Salir admin
-          </button>
-        </div>
+        {renderAdminActions()}
 
-        <div className="admin-list">
-          {collection.map((item) => (
-            <div className="admin-record" key={`${adminSection}-${item.id}`}>
-              <div className="admin-record-header">
-                <strong>ID {item.id}</strong>
-                <div>
-                  <button type="button" onClick={() => saveAdminRecord(adminSection, item)}>
-                    Guardar
-                  </button>
-                  <button type="button" onClick={() => deleteAdminRecord(adminSection, item.id)}>
-                    Eliminar
-                  </button>
-                </div>
-              </div>
-              {fields.map((field) => (
-                <label key={field}>
-                  {field}
-                  <input
-                    value={item[field] || ""}
-                    onChange={(event) =>
-                      updateAdminField(adminSection, item.id, field, event.target.value)
-                    }
-                  />
-                </label>
-              ))}
+        {isCoursesSection && collection.length > 0 ? (
+          <div className="admin-course-workspace">
+            {renderCourseSelector(selectedCourse)}
+            <div className="admin-course-editor">
+              {collection.map((item) => renderAdminRecord(item, fields))}
+              {isPythonCourse(selectedCourse) && renderPythonLessonManager()}
             </div>
-          ))}
-          {collection.length === 0 && <p className="auth-message">No hay registros guardados.</p>}
-        </div>
-
+          </div>
+        ) : (
+          <div className="admin-list">
+            {collection.map((item) => renderAdminRecord(item, fields))}
+            {collection.length === 0 && <p className="auth-message">No hay registros guardados.</p>}
+          </div>
+        )}
         {authMessage && <p className="auth-message">{authMessage}</p>}
       </div>
     );
@@ -693,14 +950,7 @@ function Header({
               {authMode === "admin" ? (
                 renderAdminPanel()
               ) : currentUser ? (
-                <div className="auth-session">
-                  <p className="auth-title">Hola, {currentUser.name}</p>
-                  <p className="auth-email">{currentUser.email}</p>
-                  <button className="auth-submit" type="button" onClick={handleLogout}>
-                    Cerrar sesion
-                  </button>
-                  {authMessage && <p className="auth-message">{authMessage}</p>}
-                </div>
+                renderUserProfile()
               ) : (
                 <form className="auth-form" onSubmit={handleAuthSubmit}>
                   {authMode === "register" && (
