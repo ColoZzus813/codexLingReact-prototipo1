@@ -5,16 +5,22 @@
       "name": "Sebas",
       "email": "correo@correo.com",
       "password": "11803da3-e444-4d2b-93f0-54b111dfaf84:2bf2519a96c2328aba71823e27222f2144f2e4a705ca75409f6a72f2097eed16",
-      "experience": 320,
+      "experience": 380,
       "completedPythonLevels": [
         "1:1",
         "1:2",
         "1:3",
         "2:1",
-        "2:2"
+        "2:2",
+        "3:1",
+        "3:2",
+        "4:1",
+        "4:2",
+        "5:1",
+        "5:2"
       ],
       "createdAt": "2026-05-07T03:58:15.854Z",
-      "updatedAt": "2026-05-07T03:58:54.054Z"
+      "updatedAt": "2026-05-07T18:53:48.253Z"
     }
   ],
   "userLevels": [
