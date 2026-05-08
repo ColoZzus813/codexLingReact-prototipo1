@@ -91,7 +91,11 @@ export async function createPythonLevel(lessonId, levelData) {
     description: levelData.description || "",
     content: levelData.content || "",
     xpReward: Number(levelData.xpReward) || Number(lesson.xpReward) || 10,
-    order: Number(levelData.order) || lesson.levels.length + 1
+    order: Number(levelData.order) || lesson.levels.length + 1,
+    hasCompiler: levelData.hasCompiler || false,
+    expectedOutput: levelData.expectedOutput || "",
+    language: levelData.language || "python3",
+    compilerInstructions: levelData.compilerInstructions || ""
   };
 
   lesson.levels.push(level);
@@ -122,7 +126,11 @@ export async function updatePythonLevel(lessonId, levelId, levelData) {
       levelData.xpReward !== undefined
         ? Number(levelData.xpReward)
         : lesson.levels[index].xpReward,
-    order: levelData.order !== undefined ? Number(levelData.order) : lesson.levels[index].order
+    order: levelData.order !== undefined ? Number(levelData.order) : lesson.levels[index].order,
+    hasCompiler: levelData.hasCompiler !== undefined ? levelData.hasCompiler : lesson.levels[index].hasCompiler,
+    expectedOutput: levelData.expectedOutput !== undefined ? levelData.expectedOutput : lesson.levels[index].expectedOutput,
+    language: levelData.language !== undefined ? levelData.language : lesson.levels[index].language,
+    compilerInstructions: levelData.compilerInstructions !== undefined ? levelData.compilerInstructions : lesson.levels[index].compilerInstructions
   };
   lesson.updatedAt = new Date().toISOString();
 

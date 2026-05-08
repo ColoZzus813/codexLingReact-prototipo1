@@ -9,7 +9,8 @@ import Python from "./assets/pages/Python";
 import PythonCourse from "./assets/pages/PythonCourse";
 import Java from "./assets/pages/Java";
 import Php from "./assets/pages/Php";
-import "./Styles/Global.css";
+import backgroundLogo from "./assets/img/logocodex.png";
+import "./styles/Global.css";
 
 function SimplePage({ title, description }) {
   return (
@@ -64,12 +65,7 @@ function App() {
       <div className="bg-pattern" aria-hidden="true"></div>
       <div className="grid-overlay" aria-hidden="true"></div>
       <div className="code-sky" aria-hidden="true">
-        <span>&lt;/&gt;</span>
-        <span>{`{ }`}</span>
-        <span>#</span>
-        <span>( )</span>
-        <span>;</span>
-        <span>[ ]</span>
+        <img src={backgroundLogo} alt="CodexLing logo" className="background-logo" />
       </div>
       <Header 
         setPage={setPage}

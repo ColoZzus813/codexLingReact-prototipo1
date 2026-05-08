@@ -15,6 +15,14 @@ npm install
 
 Crea un archivo `.env` tomando como base `.env.example` si quieres cambiar el puerto o el origen permitido por CORS.
 
+## Configuración de Judge0
+
+Para habilitar la funcionalidad de compilador de código:
+
+1. Regístrate en [RapidAPI](https://rapidapi.com/) y obtén una API key para Judge0
+2. Copia `.env.example` a `.env`
+3. Agrega tu API key: `JUDGE0_API_KEY=tu-api-key-aqui`
+
 ## Scripts
 
 ```bash

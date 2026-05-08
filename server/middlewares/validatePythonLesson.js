@@ -18,7 +18,11 @@ function validatePayload(body, requiredTitle = true) {
     description: normalizeText(body.description),
     content: normalizeText(body.content),
     xpReward: normalizeNumber(body.xpReward),
-    order: normalizeNumber(body.order)
+    order: normalizeNumber(body.order),
+    hasCompiler: body.hasCompiler,
+    expectedOutput: normalizeText(body.expectedOutput),
+    language: normalizeText(body.language),
+    compilerInstructions: normalizeText(body.compilerInstructions)
   };
   const errors = [];
 
@@ -36,6 +40,22 @@ function validatePayload(body, requiredTitle = true) {
 
   if (payload.xpReward !== undefined && (!Number.isInteger(payload.xpReward) || payload.xpReward < 0)) {
     errors.push("xpReward debe ser un numero entero mayor o igual a 0.");
+  }
+
+  if (payload.hasCompiler !== undefined && typeof payload.hasCompiler !== "boolean") {
+    errors.push("hasCompiler debe ser un valor booleano.");
+  }
+
+  if (payload.expectedOutput !== undefined && typeof payload.expectedOutput !== "string") {
+    errors.push("expectedOutput debe ser texto.");
+  }
+
+  if (payload.language !== undefined && typeof payload.language !== "string") {
+    errors.push("language debe ser texto.");
+  }
+
+  if (payload.compilerInstructions !== undefined && typeof payload.compilerInstructions !== "string") {
+    errors.push("compilerInstructions debe ser texto.");
   }
 
   return {

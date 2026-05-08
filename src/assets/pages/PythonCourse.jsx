@@ -28,6 +28,73 @@ function PythonCourse({ setPage }) {
   const [activeLessonId, setActiveLessonId] = useState(null);
   const [activeLevelId, setActiveLevelId] = useState(null);
   const [message, setMessage] = useState("");
+  const [code, setCode] = useState("");
+  const [compilerOutput, setCompilerOutput] = useState("");
+  const [isCompiling, setIsCompiling] = useState(false);
+
+  const runCode = async () => {
+    if (!code.trim()) {
+      setCompilerOutput("Error: No hay código para ejecutar.");
+      return;
+    }
+
+    setIsCompiling(true);
+    setCompilerOutput("Ejecutando código...");
+
+    try {
+      const response = await fetch(`${API_URL}/python/lessons/execute`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          source_code: code,
+          language_id: activeLevel.language === "python3" ? 71 : 71, // Python 3 por defecto
+          stdin: ""
+        })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        setCompilerOutput(`Error: ${result.error?.message || "Error desconocido"}`);
+        return;
+      }
+
+      const executionResult = result.data;
+      let output = "";
+
+      if (executionResult.stderr) {
+        output += `Error:\n${executionResult.stderr}\n`;
+      }
+
+      if (executionResult.compile_output) {
+        output += `Error de compilación:\n${executionResult.compile_output}\n`;
+      }
+
+      if (executionResult.stdout) {
+        output += `Salida:\n${executionResult.stdout}`;
+      }
+
+      if (!output) {
+        output = "El código se ejecutó sin salida.";
+      }
+
+      setCompilerOutput(output);
+
+      // Verificar si la salida coincide con lo esperado
+      if (activeLevel.expectedOutput && executionResult.stdout?.trim() === activeLevel.expectedOutput.trim()) {
+        setCompilerOutput(prev => prev + "\n\n✅ ¡Excelente! Tu código produce la salida esperada.");
+      } else if (activeLevel.expectedOutput) {
+        setCompilerOutput(prev => prev + `\n\n❌ La salida no coincide con lo esperado.\nEsperado: "${activeLevel.expectedOutput}"`);
+      }
+
+    } catch (error) {
+      setCompilerOutput(`Error de conexión: ${error.message}`);
+    } finally {
+      setIsCompiling(false);
+    }
+  };
 
   useEffect(() => {
     fetch(`${API_URL}/python/lessons`)
@@ -268,6 +335,42 @@ function PythonCourse({ setPage }) {
                     <p>{activeLevel.description}</p>
                     <div className="level-xp-chip">+{activeLevel.xpReward ?? activeLesson.xpReward ?? 10} XP</div>
                     {activeLevel.content && <div className="level-content-box">{activeLevel.content}</div>}
+
+                    {activeLevel.hasCompiler && (
+                      <div className="code-compiler">
+                        <h4>Compilador de Código</h4>
+                        {activeLevel.compilerInstructions && (
+                          <div className="compiler-instructions">
+                            <strong>Instrucciones:</strong>
+                            <p>{activeLevel.compilerInstructions}</p>
+                          </div>
+                        )}
+                        <textarea
+                          className="code-editor"
+                          value={code}
+                          onChange={(e) => setCode(e.target.value)}
+                          placeholder="Escribe tu código aquí..."
+                          rows={10}
+                        />
+                        <div className="compiler-actions">
+                          <button
+                            className="run-code-button"
+                            type="button"
+                            onClick={runCode}
+                            disabled={isCompiling}
+                          >
+                            {isCompiling ? "Ejecutando..." : "Ejecutar Código"}
+                          </button>
+                        </div>
+                        {compilerOutput && (
+                          <div className="compiler-output">
+                            <strong>Resultado:</strong>
+                            <pre>{compilerOutput}</pre>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
                     <button
                       className="complete-level-button"
                       type="button"

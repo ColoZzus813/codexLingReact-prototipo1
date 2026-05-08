@@ -598,17 +598,37 @@ function Header({
                       </button>
                     </div>
                   </div>
-                  {["title", "description", "content", "xpReward", "order"].map((field) => (
+                  {[
+                    "title",
+                    "description",
+                    "content",
+                    "xpReward",
+                    "order",
+                    "hasCompiler",
+                    "expectedOutput",
+                    "language",
+                    "compilerInstructions"
+                  ].map((field) => (
                     <label key={field}>
                       {adminFieldLabels[field] || field}
-                      <input
-                        type={field === "order" || field === "xpReward" ? "number" : "text"}
-                        min={field === "order" ? "1" : field === "xpReward" ? "0" : undefined}
-                        value={level[field] || ""}
-                        onChange={(event) =>
-                          updateLevelField(lesson.id, level.id, field, event.target.value)
-                        }
-                      />
+                      {field === "hasCompiler" ? (
+                        <input
+                          type="checkbox"
+                          checked={level[field] || false}
+                          onChange={(event) =>
+                            updateLevelField(lesson.id, level.id, field, event.target.checked)
+                          }
+                        />
+                      ) : (
+                        <input
+                          type={field === "order" || field === "xpReward" ? "number" : "text"}
+                          min={field === "order" ? "1" : field === "xpReward" ? "0" : undefined}
+                          value={level[field] || ""}
+                          onChange={(event) =>
+                            updateLevelField(lesson.id, level.id, field, event.target.value)
+                          }
+                        />
+                      )}
                     </label>
                   ))}
                 </div>
@@ -621,15 +641,33 @@ function Header({
                     Agregar nivel
                   </button>
                 </div>
-                {["title", "description", "content", "xpReward", "order"].map((field) => (
+                {[
+                  "title",
+                  "description",
+                  "content",
+                  "xpReward",
+                  "order",
+                  "hasCompiler",
+                  "expectedOutput",
+                  "language",
+                  "compilerInstructions"
+                ].map((field) => (
                   <label key={field}>
                     {adminFieldLabels[field] || field}
-                    <input
-                      type={field === "order" || field === "xpReward" ? "number" : "text"}
-                      min={field === "order" ? "1" : field === "xpReward" ? "0" : undefined}
-                      value={newLevelByLesson[lesson.id]?.[field] || ""}
-                      onChange={(event) => handleNewLevelChange(lesson.id, field, event.target.value)}
-                    />
+                    {field === "hasCompiler" ? (
+                      <input
+                        type="checkbox"
+                        checked={newLevelByLesson[lesson.id]?.[field] || false}
+                        onChange={(event) => handleNewLevelChange(lesson.id, field, event.target.checked)}
+                      />
+                    ) : (
+                      <input
+                        type={field === "order" || field === "xpReward" ? "number" : "text"}
+                        min={field === "order" ? "1" : field === "xpReward" ? "0" : undefined}
+                        value={newLevelByLesson[lesson.id]?.[field] || ""}
+                        onChange={(event) => handleNewLevelChange(lesson.id, field, event.target.value)}
+                      />
+                    )}
                   </label>
                 ))}
               </div>
@@ -656,7 +694,11 @@ function Header({
     page: "Pagina",
     type: "Tipo",
     name: "Nombre",
-    email: "Correo"
+    email: "Correo",
+    hasCompiler: "Tiene compilador",
+    expectedOutput: "Salida esperada",
+    language: "Lenguaje",
+    compilerInstructions: "Instrucciones del compilador"
   };
 
   const renderUserLevelManager = () => (
@@ -777,46 +819,68 @@ function Header({
     const nextLevel = profile.nextLevel;
     const completedCount = profile.completedPythonLevelsCount || 0;
     const totalLevels = profile.totalPythonLevels || 0;
-    const levelProgress = profile.levelProgress ?? 0;
+    const levelProgress = Math.min(Math.max(profile.levelProgress ?? 0, 0), 100);
 
     return (
       <div className="auth-session profile-panel">
         <div className="profile-heading">
           <div className="profile-avatar">{currentUser.name?.charAt(0)?.toUpperCase() || "U"}</div>
-          <div>
+          <div className="profile-info">
             <p className="auth-title">{currentUser.name}</p>
+            <p className="profile-role">Estudiante CodexLing</p>
             <p className="auth-email">{currentUser.email}</p>
           </div>
         </div>
 
-        <div className="profile-level-card">
-          <span>{currentLevel.badge || "Nivel actual"}</span>
-          <strong>{currentLevel.title}</strong>
-          <p>{profile.experience || 0} XP acumulada</p>
+        <div className="profile-summary">
+          <div className="profile-level-chip">{currentLevel.badge || "Nivel actual"}</div>
+          <div className="profile-level-details">
+            <strong>{currentLevel.title}</strong>
+            <p>{profile.experience || 0} XP acumulada</p>
+          </div>
+        </div>
+
+        <div className="profile-progress-card">
+          <div className="profile-progress-header">
+            <span>Progreso actual</span>
+            <strong>{levelProgress}%</strong>
+          </div>
           <div className="profile-progress">
-            <span style={{ width: `${levelProgress}%` }}></span>
+            <span style={{ width: `${levelProgress}%` }} />
           </div>
           <small>
             {nextLevel
               ? `${profile.xpToNextLevel} XP para ${nextLevel.title}`
-              : "Nivel maximo alcanzado"}
+              : "Nivel máximo alcanzado"}
           </small>
         </div>
 
         <div className="profile-stats">
-          <div>
+          <div className="profile-stat-card">
             <strong>{completedCount}</strong>
             <span>Apartados completados</span>
           </div>
-          <div>
+          <div className="profile-stat-card">
             <strong>{totalLevels}</strong>
             <span>Apartados disponibles</span>
           </div>
         </div>
 
-        <button className="auth-submit" type="button" onClick={handleLogout}>
-          Cerrar sesion
-        </button>
+        <div className="profile-actions">
+          <button
+            className="profile-button"
+            type="button"
+            onClick={() => {
+              setPage("home");
+              setAuthOpen(false);
+            }}
+          >
+            Ver mis cursos
+          </button>
+          <button className="auth-submit profile-logout" type="button" onClick={handleLogout}>
+            Cerrar sesión
+          </button>
+        </div>
         {authMessage && <p className="auth-message">{authMessage}</p>}
       </div>
     );
