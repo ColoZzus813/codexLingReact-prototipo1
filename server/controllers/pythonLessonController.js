@@ -1,4 +1,3 @@
-import axios from "axios";
 import {
   createPythonLesson,
   findAllPythonLessons,
@@ -6,8 +5,11 @@ import {
   deletePythonLesson,
   createPythonLevel,
   updatePythonLevel,
-  deletePythonLevel
+  deletePythonLevel,
+  findPythonLevel
 } from "../models/pythonLessonModel.js";
+import { validateCode } from "../utils/judge0Validator.js";
+import { broadcastUpdate } from "../utils/realtime.js";
 
 export async function getPythonLessons(_req, res, next) {
   try {
@@ -21,6 +23,7 @@ export async function getPythonLessons(_req, res, next) {
 export async function postPythonLesson(req, res, next) {
   try {
     const lesson = await createPythonLesson(req.body);
+    broadcastUpdate("python-lessons:updated", { lessonId: lesson.id });
     res.status(201).json({
       message: "Leccion creada correctamente.",
       data: lesson
@@ -32,10 +35,12 @@ export async function postPythonLesson(req, res, next) {
 
 export async function putPythonLesson(req, res, next) {
   try {
-    const lesson = await updatePythonLesson(req.params.id, req.body);
+    const lessonId = Number(req.params.id);
+    const lesson = await updatePythonLesson(lessonId, req.body);
     if (!lesson) {
       return res.status(404).json({ error: { message: "Leccion no encontrada." } });
     }
+    broadcastUpdate("python-lessons:updated", { lessonId });
     res.json({
       message: "Leccion actualizada correctamente.",
       data: lesson
@@ -45,12 +50,14 @@ export async function putPythonLesson(req, res, next) {
   }
 }
 
-export async function deletePythonLesson(req, res, next) {
+export async function deletePythonLessonHandler(req, res, next) {
   try {
-    const deleted = await deletePythonLesson(req.params.id);
+    const lessonId = Number(req.params.id);
+    const deleted = await deletePythonLesson(lessonId);
     if (!deleted) {
       return res.status(404).json({ error: { message: "Leccion no encontrada." } });
     }
+    broadcastUpdate("python-lessons:updated", { lessonId, deleted: true });
     res.json({ message: "Leccion eliminada correctamente." });
   } catch (error) {
     next(error);
@@ -59,10 +66,12 @@ export async function deletePythonLesson(req, res, next) {
 
 export async function postPythonLevel(req, res, next) {
   try {
-    const level = await createPythonLevel(req.params.lessonId, req.body);
+    const lessonId = Number(req.params.lessonId);
+    const level = await createPythonLevel(lessonId, req.body);
     if (!level) {
       return res.status(404).json({ error: { message: "Leccion no encontrada." } });
     }
+    broadcastUpdate("python-lessons:updated", { lessonId, levelId: level.id });
     res.status(201).json({
       message: "Nivel creado correctamente.",
       data: level
@@ -74,10 +83,13 @@ export async function postPythonLevel(req, res, next) {
 
 export async function putPythonLevel(req, res, next) {
   try {
-    const level = await updatePythonLevel(req.params.lessonId, req.params.levelId, req.body);
+    const lessonId = Number(req.params.lessonId);
+    const levelId = Number(req.params.levelId);
+    const level = await updatePythonLevel(lessonId, levelId, req.body);
     if (!level) {
       return res.status(404).json({ error: { message: "Nivel no encontrado." } });
     }
+    broadcastUpdate("python-lessons:updated", { lessonId, levelId });
     res.json({
       message: "Nivel actualizado correctamente.",
       data: level
@@ -87,92 +99,49 @@ export async function putPythonLevel(req, res, next) {
   }
 }
 
-export async function deletePythonLevel(req, res, next) {
+export async function deletePythonLevelHandler(req, res, next) {
   try {
-    const deleted = await deletePythonLevel(req.params.lessonId, req.params.levelId);
+    const lessonId = Number(req.params.lessonId);
+    const levelId = Number(req.params.levelId);
+    const deleted = await deletePythonLevel(lessonId, levelId);
     if (!deleted) {
       return res.status(404).json({ error: { message: "Nivel no encontrado." } });
     }
+    broadcastUpdate("python-lessons:updated", { lessonId, levelId, deleted: true });
     res.json({ message: "Nivel eliminado correctamente." });
   } catch (error) {
     next(error);
   }
 }
 
-export async function executeCode(req, res, next) {
+export async function validatePythonCode(req, res, next) {
   try {
-    const { source_code, language_id, stdin } = req.body;
+    const { lessonId, levelId } = req.params;
+    const { source_code } = req.body;
 
-    if (!source_code || !language_id) {
+    if (!source_code) {
       return res.status(400).json({
-        error: { message: "Se requiere source_code y language_id." }
+        error: { message: "Falta el parámetro: source_code" }
       });
     }
 
-    // Enviar código a Judge0
-    const submissionResponse = await axios.post("https://judge0-ce.p.rapidapi.com/submissions", {
-      source_code,
-      language_id: parseInt(language_id),
-      stdin: stdin || "",
-      expected_output: null,
-      cpu_time_limit: 2,
-      cpu_extra_time: 0.5,
-      wall_time_limit: 5,
-      memory_limit: 128000,
-      stack_limit: 64000,
-      max_file_size: 1024
-    }, {
-      headers: {
-        "Content-Type": "application/json",
-        "X-RapidAPI-Key": process.env.JUDGE0_API_KEY || "your-judge0-api-key",
-        "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com"
-      }
-    });
-
-    const token = submissionResponse.data.token;
-
-    // Esperar resultado
-    let result;
-    let attempts = 0;
-    const maxAttempts = 10;
-
-    while (attempts < maxAttempts) {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      const statusResponse = await axios.get(`https://judge0-ce.p.rapidapi.com/submissions/${token}`, {
-        headers: {
-          "X-RapidAPI-Key": process.env.JUDGE0_API_KEY || "your-judge0-api-key",
-          "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com"
-        }
-      });
-
-      if (statusResponse.data.status.id > 2) { // No está en cola o procesando
-        result = statusResponse.data;
-        break;
-      }
-
-      attempts++;
-    }
-
-    if (!result) {
-      return res.status(408).json({
-        error: { message: "Tiempo de espera agotado para la ejecución del código." }
+    const level = await findPythonLevel(lessonId, levelId);
+    if (!level) {
+      return res.status(404).json({
+        error: { message: "Nivel no encontrado" }
       });
     }
 
-    res.json({
-      data: {
-        stdout: result.stdout || "",
-        stderr: result.stderr || "",
-        compile_output: result.compile_output || "",
-        time: result.time,
-        memory: result.memory,
-        status: result.status,
-        token
-      }
-    });
+    if (!level.requiresValidation) {
+      return res.status(400).json({
+        error: { message: "Este nivel no requiere validación de código" }
+      });
+    }
+
+    const result = await validateCode(source_code, level.languageId, level.expectedOutput);
+
+    res.json(result);
   } catch (error) {
-    console.error("Error ejecutando código:", error);
     next(error);
   }
 }

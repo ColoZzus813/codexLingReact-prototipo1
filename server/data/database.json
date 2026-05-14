@@ -2,35 +2,13 @@
   "users": [
     {
       "id": 1,
-      "name": "Sebas",
-      "email": "correo@correo.com",
-      "password": "11803da3-e444-4d2b-93f0-54b111dfaf84:2bf2519a96c2328aba71823e27222f2144f2e4a705ca75409f6a72f2097eed16",
-      "experience": 380,
-      "completedPythonLevels": [
-        "1:1",
-        "1:2",
-        "1:3",
-        "2:1",
-        "2:2",
-        "3:1",
-        "3:2",
-        "4:1",
-        "4:2",
-        "5:1",
-        "5:2"
-      ],
-      "createdAt": "2026-05-07T03:58:15.854Z",
-      "updatedAt": "2026-05-07T18:53:48.253Z"
-    },
-    {
-      "id": 2,
-      "name": "Juan Esteban",
-      "email": "correo1@correo.com",
-      "password": "4bf46a97-e8b1-44ff-ae01-614b1f2d7b17:acbecb927174489681a49f51f0910562b66e7b096303212c21816fffbafcdaa1",
+      "name": "Sebastian Ruiz Giraldo",
+      "email": "sebasru813@gmail.com",
+      "password": "1783d6d1-10d1-48fa-b790-7f3d1b9caac4:d6192e4ade9cb496456738a86543bcee474d48b54d0f953c0a5e7f7465a66fdf",
       "experience": 0,
       "completedPythonLevels": [],
-      "createdAt": "2026-05-08T01:06:33.559Z",
-      "updatedAt": "2026-05-08T01:06:33.559Z"
+      "createdAt": "2026-05-14T17:44:37.297Z",
+      "updatedAt": "2026-05-14T17:44:37.297Z"
     }
   ],
   "userLevels": [
@@ -74,14 +52,19 @@
           "title": "Que es Python y porque es genial?",
           "description": "Elige tu clase inicial y descubre por qué este lenguaje es el arma más versátil del reino.",
           "content": "Plan inicial para aprender la sintaxis basica de Python.",
-          "order": 1
+          "order": 1,
+          "xpReward": 20,
+          "requiresValidation": true,
+          "expectedOutput": "hola mundo",
+          "languageId": 71
         },
         {
           "id": 2,
           "title": "El Inventario del Héroe",
           "description": "Desbloquea tus primeros cofres de inventario para almacenar energía y datos vitales.",
           "content": "Plan para practicar estructuras de control y funciones.",
-          "order": 2
+          "order": 2,
+          "xpReward": 0
         },
         {
           "id": 3,
@@ -92,8 +75,8 @@
         }
       ],
       "createdAt": "2026-05-06T00:00:00.000Z",
-      "updatedAt": "2026-05-07T03:58:42.625Z",
-      "xpReward": 100
+      "updatedAt": "2026-05-14T20:13:16.418Z",
+      "xpReward": 0
     },
     {
       "id": 2,
@@ -117,7 +100,8 @@
         }
       ],
       "createdAt": "2026-05-06T17:36:51.454Z",
-      "updatedAt": "2026-05-06T17:56:03.326Z"
+      "updatedAt": "2026-05-14T18:15:02.591Z",
+      "xpReward": 0
     },
     {
       "id": 3,
@@ -189,9 +173,240 @@
         }
       ],
       "createdAt": "2026-05-06T17:53:02.903Z",
-      "updatedAt": "2026-05-06T18:15:15.453Z"
+      "updatedAt": "2026-05-14T18:01:44.097Z"
     }
   ],
+  "courseLessons": {
+    "python": [
+      {
+        "id": 1,
+        "title": "El Despertar del Programador",
+        "description": "Entra en el santuario de inicio para forjar tus primeras herramientas y entender las reglas de este nuevo mundo.",
+        "order": 1,
+        "levels": [
+          {
+            "id": 1,
+            "title": "Que es Python y porque es genial?",
+            "description": "Elige tu clase inicial y descubre por qué este lenguaje es el arma más versátil del reino.",
+            "content": "Plan inicial para aprender la sintaxis basica de Python.",
+            "order": 1,
+            "xpReward": 20,
+            "requiresValidation": true,
+            "expectedOutput": "hola mundo",
+            "languageId": 71
+          },
+          {
+            "id": 2,
+            "title": "El Inventario del Héroe",
+            "description": "Desbloquea tus primeros cofres de inventario para almacenar energía y datos vitales.",
+            "content": "Plan para practicar estructuras de control y funciones.",
+            "order": 2,
+            "xpReward": 0
+          },
+          {
+            "id": 3,
+            "title": "Identificación de Botín",
+            "description": "Identifica la rareza de los objetos que guardas: ¿son números mágicos o pergaminos de texto?",
+            "content": "Plan para aprender sobre ciclos y listas",
+            "order": 3
+          }
+        ],
+        "createdAt": "2026-05-06T00:00:00.000Z",
+        "updatedAt": "2026-05-14T20:13:16.418Z",
+        "xpReward": 0
+      },
+      {
+        "id": 2,
+        "title": "La Encrucijada Lógica",
+        "description": "Aprende a manipular la realidad con cálculos precisos y a dictar el camino que seguirá tu código.",
+        "order": 2,
+        "levels": [
+          {
+            "id": 1,
+            "title": "Potenciadores de Combate",
+            "description": "Equipa multiplicadores de daño y suma puntos de experiencia con aritmética básica.",
+            "content": "",
+            "order": 1
+          },
+          {
+            "id": 2,
+            "title": "El Sendero del Destino",
+            "description": "Atraviesa encrucijadas críticas donde cada elección cambia el rumbo de tu script.",
+            "content": "",
+            "order": 2
+          }
+        ],
+        "createdAt": "2026-05-06T17:36:51.454Z",
+        "updatedAt": "2026-05-14T18:15:02.591Z",
+        "xpReward": 0
+      },
+      {
+        "id": 3,
+        "title": "El Valle de la Automatización",
+        "description": "Domina el control de multitudes y el procesamiento en masa para que el sistema trabaje mientras tú descansas.",
+        "order": 3,
+        "levels": [
+          {
+            "id": 1,
+            "title": "El Hechizo de Repetición",
+            "description": "Domina los ciclos for y while para repetir acciones automáticamente y ganar experiencia sin mover un dedo.",
+            "content": "",
+            "order": 1
+          },
+          {
+            "id": 2,
+            "title": "Gestión del Inventario",
+            "description": "Organiza tu equipo en formaciones dinámicas para gestionar múltiples elementos a la vez.",
+            "content": "",
+            "order": 2
+          }
+        ],
+        "createdAt": "2026-05-06T17:52:48.136Z",
+        "updatedAt": "2026-05-06T18:14:58.715Z"
+      },
+      {
+        "id": 4,
+        "title": "La Bóveda de Información",
+        "description": "Adéntrate en estructuras complejas donde el orden y la eficiencia son la clave para gestionar grandes tesoros de datos.",
+        "order": 4,
+        "levels": [
+          {
+            "id": 1,
+            "title": "El Bestiario Eterno",
+            "description": "",
+            "content": "Crea una base de datos de monstruos vinculando cada nombre con sus estadísticas únicas.",
+            "order": 1
+          },
+          {
+            "id": 2,
+            "title": "Reliquias de Piedra",
+            "description": "Descubre artefactos inmutables y portales que eliminan duplicados del mapa.",
+            "content": "",
+            "order": 2
+          }
+        ],
+        "createdAt": "2026-05-06T17:52:54.124Z",
+        "updatedAt": "2026-05-06T18:15:05.553Z"
+      },
+      {
+        "id": 5,
+        "title": "El Laboratorio de Alquimia",
+        "description": "Aprende a encapsular magia pura en frascos reutilizables que podrás lanzar en cualquier momento de la batalla.",
+        "order": 5,
+        "levels": [
+          {
+            "id": 1,
+            "title": "Pergaminos Reutilizables",
+            "description": "Forja hechizos personalizados que puedes invocar en cualquier batalla con una sola palabra.",
+            "content": "",
+            "order": 1
+          },
+          {
+            "id": 2,
+            "title": "El Mensajero del Reino",
+            "description": "Envía suministros a través del código y recibe botines valiosos tras completar la tarea.",
+            "content": "",
+            "order": 2
+          }
+        ],
+        "createdAt": "2026-05-06T17:53:02.903Z",
+        "updatedAt": "2026-05-14T18:01:44.097Z"
+      }
+    ],
+    "html": [
+      {
+        "id": 1,
+        "title": "Fundamentos de la Web",
+        "description": "Aprende como se estructura una pagina y que papel cumple HTML dentro del navegador.",
+        "order": 1,
+        "xpReward": 10,
+        "levels": [
+          {
+            "id": 1,
+            "title": "Estructura basica",
+            "description": "Reconoce las etiquetas esenciales de un documento HTML.",
+            "content": "Crea una pagina con html, head, body, un titulo y un parrafo principal.",
+            "order": 1,
+            "xpReward": 10
+          },
+          {
+            "id": 2,
+            "title": "Contenido semantico",
+            "description": "Organiza informacion con encabezados, secciones, listas y enlaces.",
+            "content": "Construye una seccion de perfil usando h1, section, ul, li y a.",
+            "order": 2,
+            "xpReward": 15
+          }
+        ],
+        "createdAt": "2026-05-14T00:00:00.000Z",
+        "updatedAt": "2026-05-14T00:00:00.000Z"
+      }
+    ],
+    "java": [
+      {
+        "id": 1,
+        "title": "Primer Programa en Java",
+        "description": "Conoce la estructura de una clase, el metodo main y la salida por consola.",
+        "order": 1,
+        "xpReward": 10,
+        "levels": [
+          {
+            "id": 1,
+            "title": "Clase principal",
+            "description": "Identifica la clase publica y el punto de entrada del programa.",
+            "content": "Crea una clase Main con public static void main y muestra un mensaje en consola.",
+            "order": 1,
+            "xpReward": 10,
+            "requiresValidation": true,
+            "expectedOutput": "hola mundo",
+            "languageId": 62
+          },
+          {
+            "id": 2,
+            "title": "Variables y tipos",
+            "description": "Declara datos simples para guardar numeros, texto y valores logicos.",
+            "content": "Practica con int, double, String y boolean dentro del metodo main.",
+            "order": 2,
+            "xpReward": 15
+          }
+        ],
+        "createdAt": "2026-05-14T00:00:00.000Z",
+        "updatedAt": "2026-05-14T20:20:47.319Z"
+      }
+    ],
+    "php": [
+      {
+        "id": 1,
+        "title": "PHP del Lado del Servidor",
+        "description": "Empieza a escribir scripts PHP y entiende como generan contenido dinamico.",
+        "order": 1,
+        "xpReward": 10,
+        "levels": [
+          {
+            "id": 1,
+            "title": "Sintaxis inicial",
+            "description": "Usa etiquetas PHP, variables y echo para imprimir contenido.",
+            "content": "Crea un script con una variable de nombre y muestra un saludo usando echo.",
+            "order": 1,
+            "xpReward": 10,
+            "requiresValidation": true,
+            "expectedOutput": "hola mundo",
+            "languageId": 68
+          },
+          {
+            "id": 2,
+            "title": "Datos dinamicos",
+            "description": "Combina texto, variables y condiciones para responder a diferentes casos.",
+            "content": "Construye un mensaje que cambie segun una variable de rol o estado.",
+            "order": 2,
+            "xpReward": 15
+          }
+        ],
+        "createdAt": "2026-05-14T00:00:00.000Z",
+        "updatedAt": "2026-05-14T20:26:12.920Z"
+      }
+    ]
+  },
   "courses": [
     {
       "id": 1,
@@ -201,7 +416,7 @@
       "page": "html",
       "type": "html",
       "createdAt": "2026-05-06T00:00:00.000Z",
-      "updatedAt": "2026-05-06T00:00:00.000Z"
+      "updatedAt": "2026-05-14T19:08:07.634Z"
     },
     {
       "id": 2,
@@ -211,7 +426,7 @@
       "page": "python",
       "type": "python",
       "createdAt": "2026-05-06T00:00:00.000Z",
-      "updatedAt": "2026-05-07T04:11:50.677Z"
+      "updatedAt": "2026-05-14T20:13:22.444Z"
     },
     {
       "id": 3,

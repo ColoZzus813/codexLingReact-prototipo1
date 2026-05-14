@@ -9,6 +9,7 @@ import Python from "./assets/pages/Python";
 import PythonCourse from "./assets/pages/PythonCourse";
 import Java from "./assets/pages/Java";
 import Php from "./assets/pages/Php";
+import Admin from "./assets/pages/Admin";
 import backgroundLogo from "./assets/img/logocodex.png";
 import "./styles/Global.css";
 
@@ -30,11 +31,21 @@ function App() {
 
   const renderPage = () => {
     switch (page) {
-      case "html": return <Html />;
-      case "python": return <Python setPage={setPage} />;
-      case "python-course": return <PythonCourse setPage={setPage} />;
-      case "java": return <Java />;
-      case "php": return <Php />;
+      case "html":
+        return <Html setPage={setPage} />;
+      case "html-course":
+        return <PythonCourse setPage={setPage} courseType="html" courseTitle="HTML" backPage="html" />;
+      case "python":
+        return <Python setPage={setPage} />;
+      case "python-course":
+        return <PythonCourse setPage={setPage} courseType="python" courseTitle="Python" backPage="python" />;
+      case "java": return <Java setPage={setPage} />;
+      case "java-course":
+        return <PythonCourse setPage={setPage} courseType="java" courseTitle="Java" backPage="java" />;
+      case "php": return <Php setPage={setPage} />;
+      case "php-course":
+        return <PythonCourse setPage={setPage} courseType="php" courseTitle="PHP" backPage="php" />;
+      case "admin": return <Admin />;
       case "ranking":
         return (
           <SimplePage

@@ -66,6 +66,95 @@ const initialDatabase = {
       updatedAt: "2026-05-06T00:00:00.000Z"
     }
   ],
+  courseLessons: {
+    html: [
+      {
+        id: 1,
+        title: "Fundamentos de la Web",
+        description: "Aprende como se estructura una pagina y que papel cumple HTML dentro del navegador.",
+        order: 1,
+        xpReward: 10,
+        levels: [
+          {
+            id: 1,
+            title: "Estructura basica",
+            description: "Reconoce las etiquetas esenciales de un documento HTML.",
+            content: "Crea una pagina con html, head, body, un titulo y un parrafo principal.",
+            order: 1,
+            xpReward: 10
+          },
+          {
+            id: 2,
+            title: "Contenido semantico",
+            description: "Organiza informacion con encabezados, secciones, listas y enlaces.",
+            content: "Construye una seccion de perfil usando h1, section, ul, li y a.",
+            order: 2,
+            xpReward: 15
+          }
+        ],
+        createdAt: "2026-05-14T00:00:00.000Z",
+        updatedAt: "2026-05-14T00:00:00.000Z"
+      }
+    ],
+    java: [
+      {
+        id: 1,
+        title: "Primer Programa en Java",
+        description: "Conoce la estructura de una clase, el metodo main y la salida por consola.",
+        order: 1,
+        xpReward: 10,
+        levels: [
+          {
+            id: 1,
+            title: "Clase principal",
+            description: "Identifica la clase publica y el punto de entrada del programa.",
+            content: "Crea una clase Main con public static void main y muestra un mensaje en consola.",
+            order: 1,
+            xpReward: 10
+          },
+          {
+            id: 2,
+            title: "Variables y tipos",
+            description: "Declara datos simples para guardar numeros, texto y valores logicos.",
+            content: "Practica con int, double, String y boolean dentro del metodo main.",
+            order: 2,
+            xpReward: 15
+          }
+        ],
+        createdAt: "2026-05-14T00:00:00.000Z",
+        updatedAt: "2026-05-14T00:00:00.000Z"
+      }
+    ],
+    php: [
+      {
+        id: 1,
+        title: "PHP del Lado del Servidor",
+        description: "Empieza a escribir scripts PHP y entiende como generan contenido dinamico.",
+        order: 1,
+        xpReward: 10,
+        levels: [
+          {
+            id: 1,
+            title: "Sintaxis inicial",
+            description: "Usa etiquetas PHP, variables y echo para imprimir contenido.",
+            content: "Crea un script con una variable de nombre y muestra un saludo usando echo.",
+            order: 1,
+            xpReward: 10
+          },
+          {
+            id: 2,
+            title: "Datos dinamicos",
+            description: "Combina texto, variables y condiciones para responder a diferentes casos.",
+            content: "Construye un mensaje que cambie segun una variable de rol o estado.",
+            order: 2,
+            xpReward: 15
+          }
+        ],
+        createdAt: "2026-05-14T00:00:00.000Z",
+        updatedAt: "2026-05-14T00:00:00.000Z"
+      }
+    ]
+  },
   courses: [
     {
       id: 1,
@@ -132,6 +221,7 @@ export async function readDatabase() {
     users: [],
     userLevels: [],
     pythonLessons: [],
+    courseLessons: {},
     courses: [],
     ...database
   };

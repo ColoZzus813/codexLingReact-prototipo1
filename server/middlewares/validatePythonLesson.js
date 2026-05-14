@@ -19,10 +19,9 @@ function validatePayload(body, requiredTitle = true) {
     content: normalizeText(body.content),
     xpReward: normalizeNumber(body.xpReward),
     order: normalizeNumber(body.order),
-    hasCompiler: body.hasCompiler,
+    requiresValidation: body.requiresValidation !== undefined ? Boolean(body.requiresValidation) : undefined,
     expectedOutput: normalizeText(body.expectedOutput),
-    language: normalizeText(body.language),
-    compilerInstructions: normalizeText(body.compilerInstructions)
+    languageId: normalizeNumber(body.languageId)
   };
   const errors = [];
 
@@ -42,20 +41,8 @@ function validatePayload(body, requiredTitle = true) {
     errors.push("xpReward debe ser un numero entero mayor o igual a 0.");
   }
 
-  if (payload.hasCompiler !== undefined && typeof payload.hasCompiler !== "boolean") {
-    errors.push("hasCompiler debe ser un valor booleano.");
-  }
-
-  if (payload.expectedOutput !== undefined && typeof payload.expectedOutput !== "string") {
-    errors.push("expectedOutput debe ser texto.");
-  }
-
-  if (payload.language !== undefined && typeof payload.language !== "string") {
-    errors.push("language debe ser texto.");
-  }
-
-  if (payload.compilerInstructions !== undefined && typeof payload.compilerInstructions !== "string") {
-    errors.push("compilerInstructions debe ser texto.");
+  if (payload.languageId !== undefined && (!Number.isInteger(payload.languageId) || payload.languageId <= 0)) {
+    errors.push("languageId debe ser un numero entero positivo.");
   }
 
   return {

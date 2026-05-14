@@ -603,32 +603,18 @@ function Header({
                     "description",
                     "content",
                     "xpReward",
-                    "order",
-                    "hasCompiler",
-                    "expectedOutput",
-                    "language",
-                    "compilerInstructions"
+                    "order"
                   ].map((field) => (
                     <label key={field}>
                       {adminFieldLabels[field] || field}
-                      {field === "hasCompiler" ? (
-                        <input
-                          type="checkbox"
-                          checked={level[field] || false}
-                          onChange={(event) =>
-                            updateLevelField(lesson.id, level.id, field, event.target.checked)
-                          }
-                        />
-                      ) : (
-                        <input
-                          type={field === "order" || field === "xpReward" ? "number" : "text"}
-                          min={field === "order" ? "1" : field === "xpReward" ? "0" : undefined}
-                          value={level[field] || ""}
-                          onChange={(event) =>
-                            updateLevelField(lesson.id, level.id, field, event.target.value)
-                          }
-                        />
-                      )}
+                      <input
+                        type={field === "order" || field === "xpReward" ? "number" : "text"}
+                        min={field === "order" ? "1" : field === "xpReward" ? "0" : undefined}
+                        value={level[field] || ""}
+                        onChange={(event) =>
+                          updateLevelField(lesson.id, level.id, field, event.target.value)
+                        }
+                      />
                     </label>
                   ))}
                 </div>
@@ -646,28 +632,16 @@ function Header({
                   "description",
                   "content",
                   "xpReward",
-                  "order",
-                  "hasCompiler",
-                  "expectedOutput",
-                  "language",
-                  "compilerInstructions"
+                  "order"
                 ].map((field) => (
                   <label key={field}>
                     {adminFieldLabels[field] || field}
-                    {field === "hasCompiler" ? (
-                      <input
-                        type="checkbox"
-                        checked={newLevelByLesson[lesson.id]?.[field] || false}
-                        onChange={(event) => handleNewLevelChange(lesson.id, field, event.target.checked)}
-                      />
-                    ) : (
-                      <input
-                        type={field === "order" || field === "xpReward" ? "number" : "text"}
-                        min={field === "order" ? "1" : field === "xpReward" ? "0" : undefined}
-                        value={newLevelByLesson[lesson.id]?.[field] || ""}
-                        onChange={(event) => handleNewLevelChange(lesson.id, field, event.target.value)}
-                      />
-                    )}
+                    <input
+                      type={field === "order" || field === "xpReward" ? "number" : "text"}
+                      min={field === "order" ? "1" : field === "xpReward" ? "0" : undefined}
+                      value={newLevelByLesson[lesson.id]?.[field] || ""}
+                      onChange={(event) => handleNewLevelChange(lesson.id, field, event.target.value)}
+                    />
                   </label>
                 ))}
               </div>
@@ -694,11 +668,7 @@ function Header({
     page: "Pagina",
     type: "Tipo",
     name: "Nombre",
-    email: "Correo",
-    hasCompiler: "Tiene compilador",
-    expectedOutput: "Salida esperada",
-    language: "Lenguaje",
-    compilerInstructions: "Instrucciones del compilador"
+    email: "Correo"
   };
 
   const renderUserLevelManager = () => (
@@ -1005,7 +975,7 @@ function Header({
                 <button
                   className={authMode === "admin" ? "active" : ""}
                   type="button"
-                  onClick={() => handleAuthMode("admin")}
+                  onClick={() => setPage("admin")}
                 >
                   Admin
                 </button>

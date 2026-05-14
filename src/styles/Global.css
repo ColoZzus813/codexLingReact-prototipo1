@@ -399,6 +399,726 @@
             box-shadow: 0 8px 24px rgba(168, 85, 247, 0.28);
         }
 
+/* Admin Panel Styles */
+.admin-panel {
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.admin-header h1 {
+    color: var(--neon-purple);
+    margin: 0;
+}
+
+.logout-btn {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.logout-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: #ef4444;
+}
+
+.admin-login {
+    max-width: 400px;
+    margin: 100px auto;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    border-radius: 12px;
+    text-align: center;
+}
+
+.admin-login h1 {
+    color: var(--neon-purple);
+    margin-bottom: 20px;
+}
+
+.admin-login form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.admin-login input {
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    padding: 10px 12px;
+    font-size: 14px;
+}
+
+.admin-login input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.admin-login input:focus {
+    outline: none;
+    border-color: var(--neon-purple);
+    box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2);
+}
+
+.admin-login button {
+    background: var(--primary-purple);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.admin-login button:hover:not(:disabled) {
+    background: var(--dark-purple);
+}
+
+.admin-login button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.message {
+    color: var(--accent-cyan);
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+.admin-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+    border-bottom: 1px solid rgba(168, 85, 247, 0.2);
+    padding-bottom: 10px;
+}
+
+.admin-tabs button {
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    border: 1px solid rgba(168, 85, 247, 0.2);
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.admin-tabs button.active,
+.admin-tabs button:hover {
+    background: var(--primary-purple);
+    border-color: var(--neon-purple);
+    color: white;
+}
+
+.admin-section {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(168, 85, 247, 0.2);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.admin-section h2 {
+    color: var(--accent-cyan);
+    margin-bottom: 20px;
+    margin-top: 0;
+}
+
+.course-selector {
+    margin-bottom: 20px;
+}
+
+.course-selector label {
+    color: white;
+    margin-right: 10px;
+    font-weight: 500;
+}
+
+.course-selector select {
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    border-radius: 4px;
+    padding: 8px 12px;
+}
+
+.course-selector select option {
+    background: #0b1020;
+    color: white;
+}
+
+.course-selector select:focus {
+    outline: none;
+    border-color: var(--neon-purple);
+}
+
+.admin-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.admin-record {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(168, 85, 247, 0.15);
+    border-radius: 6px;
+    padding: 15px;
+}
+
+.admin-record h3 {
+    color: var(--neon-purple);
+    margin-bottom: 15px;
+    margin-top: 0;
+}
+
+.admin-record label {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 10px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.admin-record input {
+    border: 1px solid rgba(168, 85, 247, 0.2);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    padding: 8px 10px;
+    font-size: 14px;
+}
+
+.admin-record input:focus {
+    outline: none;
+    border-color: var(--neon-purple);
+    box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.1);
+}
+
+.admin-course-content {
+    margin-top: 25px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(168, 85, 247, 0.15);
+    border-radius: 10px;
+}
+
+.admin-course-content h3 {
+    margin-top: 0;
+    color: var(--accent-cyan);
+}
+
+.admin-lesson-summary {
+    margin-bottom: 18px;
+    padding: 15px;
+    border: 1px solid rgba(168, 85, 247, 0.15);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.lesson-summary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.lesson-summary-header h4 {
+    margin: 0;
+    color: white;
+}
+
+.section-header button,
+.admin-course-content .section-header button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    background: var(--primary-purple);
+    color: white;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.section-header button:hover,
+.admin-course-content .section-header button:hover {
+    background: var(--dark-purple);
+    transform: translateY(-1px);
+}
+
+.lesson-levels {
+    display: grid;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.lesson-level-item {
+    padding: 12px;
+    border: 1px solid rgba(168, 85, 247, 0.15);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.lesson-level-item strong {
+    display: block;
+    color: var(--neon-purple);
+    margin-bottom: 6px;
+}
+
+.level-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.75);
+    margin-top: 8px;
+}
+
+.no-levels {
+    color: rgba(255, 255, 255, 0.7);
+    font-style: italic;
+}
+
+.admin-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.admin-actions button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.admin-actions button:first-child {
+    background: var(--primary-purple);
+    color: white;
+}
+
+.admin-actions button:first-child:hover {
+    background: var(--dark-purple);
+}
+
+.admin-actions button:last-child {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.admin-actions button:last-child:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: #ef4444;
+}
+
+.lesson-actions button,
+.level-actions button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.lesson-actions button:first-child,
+.level-actions button:first-child {
+    background: var(--primary-purple);
+    color: white;
+}
+
+.lesson-actions button:first-child:hover,
+.level-actions button:first-child:hover {
+    background: var(--dark-purple);
+}
+
+.lesson-actions button.delete,
+.level-actions button.delete {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.lesson-actions button.delete:hover,
+.level-actions button.delete:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: #ef4444;
+}
+
+.admin-form {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(168, 85, 247, 0.15);
+    border-radius: 6px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.admin-form h3 {
+    color: var(--neon-purple);
+    margin-bottom: 15px;
+    margin-top: 0;
+}
+
+.admin-form input,
+.admin-form textarea,
+.admin-form select {
+    border: 1px solid rgba(168, 85, 247, 0.2);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    padding: 8px 10px;
+    font-size: 14px;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.admin-form input::placeholder,
+.admin-form textarea::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.admin-form input:focus,
+.admin-form textarea:focus,
+.admin-form select:focus {
+    outline: none;
+    border-color: var(--neon-purple);
+    box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.1);
+}
+
+.admin-form textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.admin-form button {
+    background: var(--primary-purple);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.admin-form button:hover {
+    background: var(--dark-purple);
+}
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.modal h3 {
+    color: var(--neon-purple);
+    margin-bottom: 20px;
+    margin-top: 0;
+}
+
+.modal form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.modal input,
+.modal textarea {
+    border: 1px solid rgba(168, 85, 247, 0.2);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    padding: 10px;
+    font-size: 14px;
+}
+
+.modal input::placeholder,
+.modal textarea::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.modal input:focus,
+.modal textarea:focus {
+    outline: none;
+    border-color: var(--neon-purple);
+    box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.1);
+}
+
+.modal textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.modal-actions button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.modal-actions button:first-child {
+    background: var(--primary-purple);
+    color: white;
+}
+
+.modal-actions button:first-child:hover {
+    background: var(--dark-purple);
+}
+
+.modal-actions button:last-child {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+.modal-actions button:last-child:hover {
+    background: rgba(168, 85, 247, 0.2);
+    border-color: var(--neon-purple);
+}
+
+.validation-section {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(168, 85, 247, 0.15);
+    border-radius: 6px;
+    padding: 15px;
+}
+
+.validation-section label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.validation-section input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+}
+
+.validation-fields {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.validation-fields input {
+    border: 1px solid rgba(168, 85, 247, 0.2);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    padding: 8px 10px;
+    font-size: 14px;
+}
+
+.validation-fields input:focus {
+    outline: none;
+    border-color: var(--neon-purple);
+    box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.1);
+}
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal {
+    background: var(--ink-blue);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.modal h3 {
+    color: var(--neon-purple);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.modal form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.modal input,
+.modal textarea,
+.modal select {
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    padding: 10px 12px;
+    font-size: 14px;
+}
+
+.modal input::placeholder,
+.modal textarea::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.modal input:focus,
+.modal textarea:focus {
+    outline: none;
+    border-color: var(--neon-purple);
+    box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2);
+}
+
+.modal textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.validation-section {
+    border: 1px solid rgba(168, 85, 247, 0.2);
+    border-radius: 8px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.validation-section label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+    cursor: pointer;
+}
+
+.validation-fields {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.modal-actions button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.modal-actions button[type="submit"] {
+    background: var(--primary-purple);
+    color: white;
+}
+
+.modal-actions button[type="submit"]:hover {
+    background: var(--dark-purple);
+}
+
+.modal-actions button[type="button"] {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+.modal-actions button[type="button"]:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .admin-content {
+        grid-template-columns: 1fr;
+    }
+
+    .section-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch;
+    }
+
+    .lesson-item,
+    .level-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .lesson-actions,
+    .level-actions {
+        justify-content: center;
+    }
+
+    .modal {
+        margin: 20px;
+        padding: 20px;
+    }
+}
+
         .profile-info {
             display: grid;
             gap: 4px;
@@ -1456,6 +2176,121 @@
             max-width: 800px;
             text-align: center;
             padding: 30px;
+        }
+
+        /* Code Compiler Section */
+        .code-compiler-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(168, 85, 247, 0.3);
+            border-radius: 12px;
+        }
+
+        .compiler-editor {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .compiler-editor label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #a8e6cf;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .code-editor {
+            width: 100%;
+            min-height: 250px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            border-radius: 8px;
+            color: #e0e7ff;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+            outline: none;
+        }
+
+        .code-editor:focus {
+            border-color: #a855f7;
+            box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2);
+        }
+
+        .compiler-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .run-code-button {
+            padding: 12px 32px;
+            background: linear-gradient(135deg, #a855f7, #06b6d4);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .run-code-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(168, 85, 247, 0.4);
+        }
+
+        .run-code-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .compiler-output {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 8px;
+        }
+
+        .compiler-output h4 {
+            color: #fbbf24;
+            margin-bottom: 10px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .compiler-output pre {
+            color: #fef3c7;
+            margin: 0 0 10px 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .validation-success {
+            color: #86efac;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .validation-error {
+            color: #ff6b6b;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .course-description {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 20px;
             border: 1px solid rgba(168, 85, 247, 0.2);
@@ -1796,6 +2631,142 @@
   transition: 0.3s;
 }
 
-.social-icons a:hover {
+        .social-icons a:hover {
   color: #e34c26;
+}
+
+.admin-panel .admin-actions,
+.admin-panel .lesson-actions,
+.admin-panel .level-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.admin-panel .admin-actions {
+  justify-content: flex-end;
+}
+
+.admin-course-content .lesson-item,
+.admin-course-content .level-item,
+.admin-content .lesson-item,
+.admin-content .level-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.admin-course-content .lesson-info,
+.admin-course-content .level-info,
+.admin-content .lesson-info,
+.admin-content .level-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-action-button,
+.lesson-actions .admin-action-button,
+.level-actions .admin-action-button,
+.admin-actions .admin-action-button {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+}
+
+.admin-action-button i {
+  width: 14px;
+  font-size: 13px;
+  text-align: center;
+}
+
+.admin-action-button:hover {
+  transform: translateY(-1px);
+}
+
+.admin-action-button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.22);
+}
+
+.admin-action-button.save,
+.admin-actions button.admin-action-button.save {
+  background: linear-gradient(135deg, #2563eb, #0891b2);
+  border-color: rgba(125, 211, 252, 0.38);
+  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.18);
+}
+
+.admin-action-button.save:hover,
+.admin-actions button.admin-action-button.save:hover {
+  background: linear-gradient(135deg, #1d4ed8, #0e7490);
+  box-shadow: 0 12px 26px rgba(37, 99, 235, 0.26);
+}
+
+.admin-action-button.edit,
+.lesson-actions button.admin-action-button.edit,
+.level-actions button.admin-action-button.edit {
+  background: rgba(34, 211, 238, 0.12);
+  border-color: rgba(34, 211, 238, 0.42);
+  color: #a5f3fc;
+}
+
+.admin-action-button.edit:hover,
+.lesson-actions button.admin-action-button.edit:hover,
+.level-actions button.admin-action-button.edit:hover {
+  background: rgba(34, 211, 238, 0.2);
+  border-color: rgba(103, 232, 249, 0.75);
+  box-shadow: 0 10px 22px rgba(34, 211, 238, 0.12);
+}
+
+.admin-action-button.delete,
+.admin-actions button.admin-action-button.delete,
+.lesson-actions button.admin-action-button.delete,
+.level-actions button.admin-action-button.delete {
+  background: rgba(239, 68, 68, 0.11);
+  border-color: rgba(248, 113, 113, 0.42);
+  color: #fecaca;
+}
+
+.admin-action-button.delete:hover,
+.admin-actions button.admin-action-button.delete:hover,
+.lesson-actions button.admin-action-button.delete:hover,
+.level-actions button.admin-action-button.delete:hover {
+  background: rgba(220, 38, 38, 0.22);
+  border-color: rgba(252, 165, 165, 0.86);
+  box-shadow: 0 10px 22px rgba(220, 38, 38, 0.16);
+}
+
+@media (max-width: 768px) {
+  .admin-course-content .lesson-item,
+  .admin-course-content .level-item,
+  .admin-content .lesson-item,
+  .admin-content .level-item {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-panel .admin-actions,
+  .admin-panel .lesson-actions,
+  .admin-panel .level-actions {
+    justify-content: stretch;
+  }
+
+  .admin-action-button,
+  .lesson-actions .admin-action-button,
+  .level-actions .admin-action-button,
+  .admin-actions .admin-action-button {
+    flex: 1;
+  }
 }

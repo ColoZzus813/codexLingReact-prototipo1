@@ -1,14 +1,20 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { API_URL, subscribeToRealtime } from "../../api/realtime";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001/api";
-const PROGRESS_KEY = "codexling-python-progress";
+const legacyPythonProgressKey = "codexling-python-progress";
+
+function progressKey(courseType) {
+  return `codexling-${courseType}-progress`;
+}
 
 function levelKey(lessonId, levelId) {
   return `${lessonId}:${levelId}`;
 }
 
-function readProgress() {
-  const savedProgress = localStorage.getItem(PROGRESS_KEY);
+function readProgress(courseType) {
+  const savedProgress =
+    localStorage.getItem(progressKey(courseType)) ||
+    (courseType === "python" ? localStorage.getItem(legacyPythonProgressKey) : null);
 
   if (!savedProgress) {
     return { completedLevels: [] };
@@ -18,101 +24,74 @@ function readProgress() {
   return Array.isArray(parsedProgress) ? { completedLevels: [] } : parsedProgress;
 }
 
-function PythonCourse({ setPage }) {
+function PythonCourse({
+  setPage,
+  courseType = "python",
+  courseTitle = "Python",
+  backPage = "python"
+}) {
   const [lessons, setLessons] = useState([]);
-  const [progress, setProgress] = useState(readProgress);
+  const [progress, setProgress] = useState(() => readProgress(courseType));
   const [currentUser, setCurrentUser] = useState(() => {
     const savedUser = localStorage.getItem("codexling-user");
     return savedUser ? JSON.parse(savedUser) : null;
   });
   const [activeLessonId, setActiveLessonId] = useState(null);
   const [activeLevelId, setActiveLevelId] = useState(null);
+  const activeLessonIdRef = useRef(null);
+  const activeLevelIdRef = useRef(null);
+  const [sourceCode, setSourceCode] = useState("");
+  const [compilerOutput, setCompilerOutput] = useState(null);
+  const [validationStatus, setValidationStatus] = useState(null);
+  const [isValidating, setIsValidating] = useState(false);
   const [message, setMessage] = useState("");
-  const [code, setCode] = useState("");
-  const [compilerOutput, setCompilerOutput] = useState("");
-  const [isCompiling, setIsCompiling] = useState(false);
-
-  const runCode = async () => {
-    if (!code.trim()) {
-      setCompilerOutput("Error: No hay código para ejecutar.");
-      return;
-    }
-
-    setIsCompiling(true);
-    setCompilerOutput("Ejecutando código...");
-
-    try {
-      const response = await fetch(`${API_URL}/python/lessons/execute`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          source_code: code,
-          language_id: activeLevel.language === "python3" ? 71 : 71, // Python 3 por defecto
-          stdin: ""
-        })
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        setCompilerOutput(`Error: ${result.error?.message || "Error desconocido"}`);
-        return;
-      }
-
-      const executionResult = result.data;
-      let output = "";
-
-      if (executionResult.stderr) {
-        output += `Error:\n${executionResult.stderr}\n`;
-      }
-
-      if (executionResult.compile_output) {
-        output += `Error de compilación:\n${executionResult.compile_output}\n`;
-      }
-
-      if (executionResult.stdout) {
-        output += `Salida:\n${executionResult.stdout}`;
-      }
-
-      if (!output) {
-        output = "El código se ejecutó sin salida.";
-      }
-
-      setCompilerOutput(output);
-
-      // Verificar si la salida coincide con lo esperado
-      if (activeLevel.expectedOutput && executionResult.stdout?.trim() === activeLevel.expectedOutput.trim()) {
-        setCompilerOutput(prev => prev + "\n\n✅ ¡Excelente! Tu código produce la salida esperada.");
-      } else if (activeLevel.expectedOutput) {
-        setCompilerOutput(prev => prev + `\n\n❌ La salida no coincide con lo esperado.\nEsperado: "${activeLevel.expectedOutput}"`);
-      }
-
-    } catch (error) {
-      setCompilerOutput(`Error de conexión: ${error.message}`);
-    } finally {
-      setIsCompiling(false);
-    }
-  };
+  const lessonsEventType = `${courseType}-lessons:updated`;
 
   useEffect(() => {
-    fetch(`${API_URL}/python/lessons`)
+    activeLessonIdRef.current = activeLessonId;
+  }, [activeLessonId]);
+
+  useEffect(() => {
+    activeLevelIdRef.current = activeLevelId;
+  }, [activeLevelId]);
+
+  const loadLessons = useCallback((keepCurrentSelection = false) => {
+    return fetch(`${API_URL}/courses/${courseType}/lessons`)
       .then((response) => response.json())
       .then((result) => {
         const loadedLessons = result.data || [];
-        const firstLesson = loadedLessons[0];
-        const firstLevel = firstLesson?.levels?.[0];
+        const selectedLesson = keepCurrentSelection
+          ? loadedLessons.find((lesson) => lesson.id === activeLessonIdRef.current)
+          : null;
+        const firstLesson = selectedLesson || loadedLessons[0];
+        const selectedLevel = keepCurrentSelection
+          ? firstLesson?.levels?.find((level) => level.id === activeLevelIdRef.current)
+          : null;
+        const firstLevel = selectedLevel || firstLesson?.levels?.[0];
 
         setLessons(loadedLessons);
         setActiveLessonId(firstLesson?.id || null);
         setActiveLevelId(firstLevel?.id || null);
+        setSourceCode(firstLevel?.content || "");
       })
       .catch(() => {
         setLessons([]);
         setMessage("No se pudieron cargar las lecciones. Revisa que el backend este encendido.");
       });
-  }, []);
+  }, [courseType]);
+
+  useEffect(() => {
+    loadLessons();
+  }, [loadLessons]);
+
+  useEffect(() => {
+    return subscribeToRealtime([lessonsEventType], () => loadLessons(true));
+  }, [lessonsEventType, loadLessons]);
+
+  useEffect(() => {
+    setProgress(readProgress(courseType));
+    setMessage("");
+  }, [courseType]);
 
   useEffect(() => {
     if (!currentUser) {
@@ -120,9 +99,36 @@ function PythonCourse({ setPage }) {
     }
 
     setProgress({
-      completedLevels: currentUser.completedPythonLevels || currentUser.profile?.completedPythonLevels || []
+      completedLevels:
+        currentUser.completedCourseLevels?.[courseType] ||
+        currentUser.profile?.completedCourseLevels?.[courseType] ||
+        (courseType === "python"
+          ? currentUser.completedPythonLevels || currentUser.profile?.completedPythonLevels || []
+          : [])
     });
-  }, [currentUser]);
+  }, [courseType, currentUser]);
+
+  const completedLevelKeys = progress.completedLevels || [];
+  const isLevelCompleted = (lessonId, levelId) =>
+    completedLevelKeys.includes(levelKey(lessonId, levelId));
+
+  // Calcula activeLevel
+  const activeLesson = lessons.find((lesson) => lesson.id === activeLessonId);
+  const activeLevel = activeLesson?.levels.find((level) => level.id === activeLevelId);
+  const activeLevelCompleted = activeLesson && activeLevel
+    ? isLevelCompleted(activeLesson.id, activeLevel.id)
+    : false;
+  const requiresValidCode = Boolean(activeLevel?.requiresValidation);
+  const hasValidCodeResult = Boolean(compilerOutput?.success);
+  const canCompleteActiveLevel = !activeLevelCompleted && (!requiresValidCode || hasValidCodeResult);
+
+  useEffect(() => {
+    if (activeLevel) {
+      setSourceCode(activeLevel.content || "");
+      setCompilerOutput(null);
+      setValidationStatus(null);
+    }
+  }, [activeLevel]);
 
   useEffect(() => {
     const syncUser = (event) => {
@@ -132,13 +138,6 @@ function PythonCourse({ setPage }) {
     window.addEventListener("codexling-user-updated", syncUser);
     return () => window.removeEventListener("codexling-user-updated", syncUser);
   }, []);
-
-  const completedLevelKeys = progress.completedLevels || [];
-  const activeLesson = lessons.find((lesson) => lesson.id === activeLessonId);
-  const activeLevel = activeLesson?.levels.find((level) => level.id === activeLevelId);
-
-  const isLevelCompleted = (lessonId, levelId) =>
-    completedLevelKeys.includes(levelKey(lessonId, levelId));
 
   const isLessonCompleted = (lesson) =>
     lesson.levels.length > 0 && lesson.levels.every((level) => isLevelCompleted(lesson.id, level.id));
@@ -197,12 +196,17 @@ function PythonCourse({ setPage }) {
       return;
     }
 
+    if (activeLevel.requiresValidation && !compilerOutput?.success) {
+      setMessage("Ejecuta el codigo y valida la salida esperada antes de avanzar.");
+      return;
+    }
+
     const completedKey = levelKey(activeLesson.id, activeLevel.id);
     let earnedMessage = "Apartado completado localmente. Inicia sesion para guardar XP en tu perfil.";
 
     if (currentUser?.id) {
       try {
-        const response = await fetch(`${API_URL}/users/${currentUser.id}/progress/python-levels`, {
+        const response = await fetch(`${API_URL}/users/${currentUser.id}/progress/courses/${courseType}/levels`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -232,7 +236,7 @@ function PythonCourse({ setPage }) {
     };
 
     setProgress(newProgress);
-    localStorage.setItem(PROGRESS_KEY, JSON.stringify(newProgress));
+    localStorage.setItem(progressKey(courseType), JSON.stringify(newProgress));
 
     const currentLevelIndex = activeLesson.levels.findIndex((level) => level.id === activeLevel.id);
     const nextLevel = activeLesson.levels[currentLevelIndex + 1];
@@ -251,7 +255,10 @@ function PythonCourse({ setPage }) {
     const firstLevel = firstLesson?.levels?.[0];
 
     setProgress({ completedLevels: [] });
-    localStorage.removeItem(PROGRESS_KEY);
+    localStorage.removeItem(progressKey(courseType));
+    if (courseType === "python") {
+      localStorage.removeItem(legacyPythonProgressKey);
+    }
     setActiveLessonId(firstLesson?.id || null);
     setActiveLevelId(firstLevel?.id || null);
     setMessage("Progreso reiniciado.");
@@ -260,12 +267,12 @@ function PythonCourse({ setPage }) {
   return (
     <section className="game-course-page">
       <div className="game-course-header">
-        <button className="back-course-button" type="button" onClick={() => setPage("python")}>
+        <button className="back-course-button" type="button" onClick={() => setPage(backPage)}>
           <i className="fas fa-arrow-left"></i>
           Volver
         </button>
         <div>
-          <span>Curso Python</span>
+          <span>Curso {courseTitle}</span>
           <h1>Ruta de niveles</h1>
         </div>
         <button className="back-course-button" type="button" onClick={resetProgress}>
@@ -336,50 +343,151 @@ function PythonCourse({ setPage }) {
                     <div className="level-xp-chip">+{activeLevel.xpReward ?? activeLesson.xpReward ?? 10} XP</div>
                     {activeLevel.content && <div className="level-content-box">{activeLevel.content}</div>}
 
-                    {activeLevel.hasCompiler && (
-                      <div className="code-compiler">
-                        <h4>Compilador de Código</h4>
-                        {activeLevel.compilerInstructions && (
-                          <div className="compiler-instructions">
-                            <strong>Instrucciones:</strong>
-                            <p>{activeLevel.compilerInstructions}</p>
+                    {activeLevel.requiresValidation ? (
+                      <div className="code-compiler-section">
+                        <div className="compiler-editor">
+                          <label>Escribe tu codigo {courseTitle}:</label>
+                          <textarea
+                            className="code-editor"
+                            value={sourceCode}
+                            onChange={(e) => {
+                              setSourceCode(e.target.value);
+                              setCompilerOutput(null);
+                              setValidationStatus(null);
+                            }}
+                            placeholder="# Escribe tu codigo aqui"
+                          />
+                          <div className="compiler-buttons">
+                            <button
+                              className="run-code-button"
+                              type="button"
+                              onClick={async () => {
+                                setIsValidating(true);
+                                setCompilerOutput(null);
+                                setValidationStatus(null);
+                                try {
+                                  const response = await fetch(
+                                    `${API_URL}/courses/${courseType}/lessons/${activeLesson.id}/levels/${activeLevel.id}/validate`,
+                                    {
+                                      method: "POST",
+                                      headers: { "Content-Type": "application/json" },
+                                      body: JSON.stringify({ source_code: sourceCode })
+                                    }
+                                  );
+                                  const result = await response.json();
+
+                                  if (!response.ok) {
+                                    setCompilerOutput({
+                                      success: false,
+                                      status: "error",
+                                      message: result?.error?.message || "No se pudo validar el codigo.",
+                                      stdout: "",
+                                      stderr: ""
+                                    });
+                                    setValidationStatus("error");
+                                    return;
+                                  }
+
+                                  setCompilerOutput(result);
+
+                                  if (result?.success) {
+                                    setValidationStatus("completed");
+                                  } else {
+                                    setValidationStatus(result?.status || "error");
+                                  }
+                                } catch (error) {
+                                  setCompilerOutput({
+                                    success: false,
+                                    message: error.message,
+                                    stdout: "",
+                                    stderr: "",
+                                    status: "CONNECTION_ERROR"
+                                  });
+                                  setValidationStatus("error");
+                                } finally {
+                                  setIsValidating(false);
+                                }
+                              }}
+                              disabled={isValidating}
+                            >
+                              {isValidating ? "Ejecutando..." : "Ejecutar codigo"}
+                            </button>
                           </div>
-                        )}
-                        <textarea
-                          className="code-editor"
-                          value={code}
-                          onChange={(e) => setCode(e.target.value)}
-                          placeholder="Escribe tu código aquí..."
-                          rows={10}
-                        />
-                        <div className="compiler-actions">
-                          <button
-                            className="run-code-button"
-                            type="button"
-                            onClick={runCode}
-                            disabled={isCompiling}
-                          >
-                            {isCompiling ? "Ejecutando..." : "Ejecutar Código"}
-                          </button>
                         </div>
+
                         {compilerOutput && (
-                          <div className="compiler-output">
-                            <strong>Resultado:</strong>
-                            <pre>{compilerOutput}</pre>
+                          <div className={`compiler-output ${validationStatus}`}>
+                            <h4>Resultado:</h4>
+                            <pre>
+                              {compilerOutput.stdout ||
+                                compilerOutput.stderr ||
+                                compilerOutput.compileOutput ||
+                                compilerOutput.message ||
+                                JSON.stringify(compilerOutput, null, 2)}
+                            </pre>
+
+                            {compilerOutput.expectedOutput !== undefined && (
+                              <p>
+                                <strong>Esperado:</strong>
+                                <br />
+                                <code>{String(compilerOutput.expectedOutput)}</code>
+                              </p>
+                            )}
+
+                            {compilerOutput.actualOutput !== undefined && (
+                              <p>
+                                <strong>Obtenido:</strong>
+                                <br />
+                                <code>{String(compilerOutput.actualOutput)}</code>
+                              </p>
+                            )}
+
+                            {compilerOutput.stderr && (
+                              <p>
+                                <strong>stderr (errores):</strong>
+                                <br />
+                                <code>{String(compilerOutput.stderr)}</code>
+                              </p>
+                            )}
+
+                            {compilerOutput.compileOutput && (
+                              <p>
+                                <strong>Compilacion:</strong>
+                                <br />
+                                <code>{String(compilerOutput.compileOutput)}</code>
+                              </p>
+                            )}
+
+                            {compilerOutput.stdout && (
+                              <p>
+                                <strong>stdout (salida):</strong>
+                                <br />
+                                <code>{String(compilerOutput.stdout)}</code>
+                              </p>
+                            )}
+
+                            {compilerOutput.success && (
+                              <p className="validation-success">✓ Código validado correctamente</p>
+                            )}
+                            {!compilerOutput.success && (
+                              <p className="validation-error">✗ No coincide la salida / o hubo un error de ejecución</p>
+                            )}
                           </div>
                         )}
                       </div>
-                    )}
+                    ) : null}
 
                     <button
                       className="complete-level-button"
                       type="button"
                       onClick={completeLevel}
-                      disabled={isLevelCompleted(activeLesson.id, activeLevel.id)}
+                      disabled={!canCompleteActiveLevel}
                     >
-                      {isLevelCompleted(activeLesson.id, activeLevel.id)
+                      {activeLevelCompleted
                         ? "Apartado completado"
-                        : "Completar apartado"}
+                        : requiresValidCode && !hasValidCodeResult
+                          ? "Valida el codigo para continuar"
+                          : "Completar apartado"}
                     </button>
                   </>
                 ) : (

@@ -1,16 +1,22 @@
 import { Router } from "express";
 import {
   adminLogin,
+  createAdminCourseLesson,
+  createAdminCourseLevel,
   createAdminPythonLesson,
   createAdminPythonLevel,
   createAdminUserLevel,
   deleteAdminCourse,
+  deleteAdminCourseLesson,
+  deleteAdminCourseLevel,
   deleteAdminPythonLesson,
   deleteAdminPythonLevel,
   deleteAdminUser,
   deleteAdminUserLevel,
   getDatabase,
   updateAdminCourse,
+  updateAdminCourseLesson,
+  updateAdminCourseLevel,
   updateAdminPythonLesson,
   updateAdminPythonLevel,
   updateAdminUser,
@@ -38,6 +44,17 @@ router.delete("/users/:id", requireAdmin, deleteAdminUser);
 router.post("/user-levels", requireAdmin, validateUserLevel, createAdminUserLevel);
 router.put("/user-levels/:levelId", requireAdmin, validatePartialUserLevel, updateAdminUserLevel);
 router.delete("/user-levels/:levelId", requireAdmin, deleteAdminUserLevel);
+router.post("/courses/:courseType/lessons", requireAdmin, validateLesson, createAdminCourseLesson);
+router.put("/courses/:courseType/lessons/:lessonId", requireAdmin, validatePartialLesson, updateAdminCourseLesson);
+router.delete("/courses/:courseType/lessons/:lessonId", requireAdmin, deleteAdminCourseLesson);
+router.post("/courses/:courseType/lessons/:lessonId/levels", requireAdmin, validateLevel, createAdminCourseLevel);
+router.put(
+  "/courses/:courseType/lessons/:lessonId/levels/:levelId",
+  requireAdmin,
+  validatePartialLevel,
+  updateAdminCourseLevel
+);
+router.delete("/courses/:courseType/lessons/:lessonId/levels/:levelId", requireAdmin, deleteAdminCourseLevel);
 router.post("/python-lessons", requireAdmin, validateLesson, createAdminPythonLesson);
 router.put("/python-lessons/:lessonId", requireAdmin, validatePartialLesson, updateAdminPythonLesson);
 router.delete("/python-lessons/:lessonId", requireAdmin, deleteAdminPythonLesson);

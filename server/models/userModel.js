@@ -18,17 +18,52 @@ function levelKey(lessonId, levelId) {
   return `${lessonId}:${levelId}`;
 }
 
+function normalizeCourseType(courseType) {
+  return String(courseType || "").trim().toLowerCase();
+}
+
+function lessonsForCourse(database, courseType) {
+  const normalizedType = normalizeCourseType(courseType);
+
+  if (database.courseLessons?.[normalizedType]) {
+    return database.courseLessons[normalizedType];
+  }
+
+  if (normalizedType === "python") {
+    return database.pythonLessons || [];
+  }
+
+  return [];
+}
+
 function normalizeUserProgress(user) {
+  const completedPythonLevels = Array.isArray(user.completedPythonLevels)
+    ? user.completedPythonLevels
+    : [];
+  const completedCourseLevels = {
+    ...(user.completedCourseLevels || {})
+  };
+
+  if (!Array.isArray(completedCourseLevels.python)) {
+    completedCourseLevels.python = completedPythonLevels;
+  }
+
   return {
     experience: Number(user.experience) || 0,
-    completedPythonLevels: Array.isArray(user.completedPythonLevels)
-      ? user.completedPythonLevels
-      : []
+    completedPythonLevels,
+    completedCourseLevels
   };
 }
 
 function totalPythonLevels(pythonLessons = []) {
   return pythonLessons.reduce((total, lesson) => total + (lesson.levels?.length || 0), 0);
+}
+
+function totalCourseLevels(database, courseType) {
+  return lessonsForCourse(database, courseType).reduce(
+    (total, lesson) => total + (lesson.levels?.length || 0),
+    0
+  );
 }
 
 function buildProfile(user, database) {
@@ -44,8 +79,15 @@ function buildProfile(user, database) {
   return {
     experience: progress.experience,
     completedPythonLevels: progress.completedPythonLevels,
+    completedCourseLevels: progress.completedCourseLevels,
     completedPythonLevelsCount: progress.completedPythonLevels.length,
-    totalPythonLevels: totalPythonLevels(database.pythonLessons),
+    totalPythonLevels: totalPythonLevels(lessonsForCourse(database, "python")),
+    totalCourseLevels: Object.fromEntries(
+      (database.courses || []).map((course) => {
+        const courseType = normalizeCourseType(course.type || course.page);
+        return [courseType, totalCourseLevels(database, courseType)];
+      })
+    ),
     currentLevel,
     nextLevel,
     xpToNextLevel: nextLevel ? Math.max(nextMinXp - progress.experience, 0) : 0,
@@ -60,6 +102,7 @@ function publicUser(user, database = { userLevels: [], pythonLessons: [] }) {
 
   safeUser.experience = progress.experience;
   safeUser.completedPythonLevels = progress.completedPythonLevels;
+  safeUser.completedCourseLevels = progress.completedCourseLevels;
   safeUser.profile = buildProfile(safeUser, database);
   return safeUser;
 }
@@ -85,6 +128,7 @@ export async function createUser(userData) {
     password: hashPassword(userData.password),
     experience: 0,
     completedPythonLevels: [],
+    completedCourseLevels: {},
     createdAt: now,
     updatedAt: now
   };
@@ -162,6 +206,10 @@ export async function deleteUser(id) {
 }
 
 export async function completePythonLevel(userId, lessonId, levelId) {
+  return completeCourseLevel(userId, "python", lessonId, levelId);
+}
+
+export async function completeCourseLevel(userId, courseType, lessonId, levelId) {
   const database = await readDatabase();
   const userIndex = database.users.findIndex((user) => user.id === userId);
 
@@ -169,7 +217,9 @@ export async function completePythonLevel(userId, lessonId, levelId) {
     return null;
   }
 
-  const lesson = database.pythonLessons.find((currentLesson) => currentLesson.id === lessonId);
+  const normalizedType = normalizeCourseType(courseType);
+  const lessons = lessonsForCourse(database, normalizedType);
+  const lesson = lessons.find((currentLesson) => currentLesson.id === lessonId);
   const level = lesson?.levels?.find((currentLevel) => currentLevel.id === levelId);
 
   if (!lesson || !level) {
@@ -179,8 +229,9 @@ export async function completePythonLevel(userId, lessonId, levelId) {
   const completedKey = levelKey(lessonId, levelId);
   const user = database.users[userIndex];
   const progress = normalizeUserProgress(user);
+  const completedLevels = progress.completedCourseLevels[normalizedType] || [];
 
-  if (progress.completedPythonLevels.includes(completedKey)) {
+  if (completedLevels.includes(completedKey)) {
     return {
       user: publicUser(user, database),
       alreadyCompleted: true,
@@ -192,7 +243,14 @@ export async function completePythonLevel(userId, lessonId, levelId) {
   const updatedUser = {
     ...user,
     experience: progress.experience + xpEarned,
-    completedPythonLevels: [...progress.completedPythonLevels, completedKey],
+    completedPythonLevels:
+      normalizedType === "python"
+        ? [...progress.completedPythonLevels, completedKey]
+        : progress.completedPythonLevels,
+    completedCourseLevels: {
+      ...progress.completedCourseLevels,
+      [normalizedType]: [...completedLevels, completedKey]
+    },
     updatedAt: new Date().toISOString()
   };
 

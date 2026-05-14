@@ -1,159 +1,44 @@
-import { readDatabase, writeDatabase } from "../config/database.js";
+import {
+  createCourseLesson,
+  createCourseLevel,
+  deleteCourseLesson,
+  deleteCourseLevel,
+  findAllCourseLessons,
+  findCourseLevel,
+  updateCourseLesson,
+  updateCourseLevel
+} from "./courseLessonModel.js";
 
-function nextId(items) {
-  return items.length > 0 ? Math.max(...items.map((item) => item.id)) + 1 : 1;
+const PYTHON_COURSE_TYPE = "python";
+
+export function findAllPythonLessons() {
+  return findAllCourseLessons(PYTHON_COURSE_TYPE);
 }
 
-function sortByOrder(items) {
-  return [...items].sort((first, second) => first.order - second.order || first.id - second.id);
+export function createPythonLesson(lessonData) {
+  return createCourseLesson(PYTHON_COURSE_TYPE, lessonData);
 }
 
-function normalizeLesson(lesson) {
-  return {
-    ...lesson,
-    levels: sortByOrder(lesson.levels || [])
-  };
+export function updatePythonLesson(id, lessonData) {
+  return updateCourseLesson(PYTHON_COURSE_TYPE, id, lessonData);
 }
 
-export async function findAllPythonLessons() {
-  const database = await readDatabase();
-  return sortByOrder(database.pythonLessons).map(normalizeLesson);
+export function deletePythonLesson(id) {
+  return deleteCourseLesson(PYTHON_COURSE_TYPE, id);
 }
 
-export async function createPythonLesson(lessonData) {
-  const database = await readDatabase();
-  const now = new Date().toISOString();
-  const lesson = {
-    id: nextId(database.pythonLessons),
-    title: lessonData.title,
-    description: lessonData.description || "",
-    xpReward: Number(lessonData.xpReward) || 0,
-    order: Number(lessonData.order) || database.pythonLessons.length + 1,
-    levels: [],
-    createdAt: now,
-    updatedAt: now
-  };
-
-  database.pythonLessons.push(lesson);
-  await writeDatabase(database);
-  return lesson;
+export function createPythonLevel(lessonId, levelData) {
+  return createCourseLevel(PYTHON_COURSE_TYPE, lessonId, levelData);
 }
 
-export async function updatePythonLesson(id, lessonData) {
-  const database = await readDatabase();
-  const index = database.pythonLessons.findIndex((lesson) => lesson.id === id);
-
-  if (index === -1) {
-    return null;
-  }
-
-  database.pythonLessons[index] = {
-    ...database.pythonLessons[index],
-    ...lessonData,
-    id,
-    xpReward:
-      lessonData.xpReward !== undefined
-        ? Number(lessonData.xpReward)
-        : database.pythonLessons[index].xpReward,
-    order: lessonData.order !== undefined ? Number(lessonData.order) : database.pythonLessons[index].order,
-    updatedAt: new Date().toISOString()
-  };
-
-  await writeDatabase(database);
-  return normalizeLesson(database.pythonLessons[index]);
+export function updatePythonLevel(lessonId, levelId, levelData) {
+  return updateCourseLevel(PYTHON_COURSE_TYPE, lessonId, levelId, levelData);
 }
 
-export async function deletePythonLesson(id) {
-  const database = await readDatabase();
-  const index = database.pythonLessons.findIndex((lesson) => lesson.id === id);
-
-  if (index === -1) {
-    return false;
-  }
-
-  database.pythonLessons.splice(index, 1);
-  await writeDatabase(database);
-  return true;
+export function deletePythonLevel(lessonId, levelId) {
+  return deleteCourseLevel(PYTHON_COURSE_TYPE, lessonId, levelId);
 }
 
-export async function createPythonLevel(lessonId, levelData) {
-  const database = await readDatabase();
-  const lesson = database.pythonLessons.find((currentLesson) => currentLesson.id === lessonId);
-
-  if (!lesson) {
-    return null;
-  }
-
-  lesson.levels ||= [];
-  const level = {
-    id: nextId(lesson.levels),
-    title: levelData.title,
-    description: levelData.description || "",
-    content: levelData.content || "",
-    xpReward: Number(levelData.xpReward) || Number(lesson.xpReward) || 10,
-    order: Number(levelData.order) || lesson.levels.length + 1,
-    hasCompiler: levelData.hasCompiler || false,
-    expectedOutput: levelData.expectedOutput || "",
-    language: levelData.language || "python3",
-    compilerInstructions: levelData.compilerInstructions || ""
-  };
-
-  lesson.levels.push(level);
-  lesson.updatedAt = new Date().toISOString();
-  await writeDatabase(database);
-  return level;
-}
-
-export async function updatePythonLevel(lessonId, levelId, levelData) {
-  const database = await readDatabase();
-  const lesson = database.pythonLessons.find((currentLesson) => currentLesson.id === lessonId);
-
-  if (!lesson) {
-    return null;
-  }
-
-  const index = lesson.levels.findIndex((level) => level.id === levelId);
-
-  if (index === -1) {
-    return null;
-  }
-
-  lesson.levels[index] = {
-    ...lesson.levels[index],
-    ...levelData,
-    id: levelId,
-    xpReward:
-      levelData.xpReward !== undefined
-        ? Number(levelData.xpReward)
-        : lesson.levels[index].xpReward,
-    order: levelData.order !== undefined ? Number(levelData.order) : lesson.levels[index].order,
-    hasCompiler: levelData.hasCompiler !== undefined ? levelData.hasCompiler : lesson.levels[index].hasCompiler,
-    expectedOutput: levelData.expectedOutput !== undefined ? levelData.expectedOutput : lesson.levels[index].expectedOutput,
-    language: levelData.language !== undefined ? levelData.language : lesson.levels[index].language,
-    compilerInstructions: levelData.compilerInstructions !== undefined ? levelData.compilerInstructions : lesson.levels[index].compilerInstructions
-  };
-  lesson.updatedAt = new Date().toISOString();
-
-  await writeDatabase(database);
-  return lesson.levels[index];
-}
-
-export async function deletePythonLevel(lessonId, levelId) {
-  const database = await readDatabase();
-  const lesson = database.pythonLessons.find((currentLesson) => currentLesson.id === lessonId);
-
-  if (!lesson) {
-    return false;
-  }
-
-  const index = lesson.levels.findIndex((level) => level.id === levelId);
-
-  if (index === -1) {
-    return false;
-  }
-
-  lesson.levels.splice(index, 1);
-  lesson.updatedAt = new Date().toISOString();
-  await writeDatabase(database);
-  return true;
+export function findPythonLevel(lessonId, levelId) {
+  return findCourseLevel(PYTHON_COURSE_TYPE, lessonId, levelId);
 }

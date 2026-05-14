@@ -1,19 +1,27 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import imagenvideo from "../img/videopython.jpg";
 import logo from "../img/python.png";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001/api";
+import { API_URL, subscribeToRealtime } from "../../api/realtime";
 
 function Python({ setPage }) {
   const [mensaje, setMensaje] = useState(false);
   const [lessons, setLessons] = useState([]);
 
-  useEffect(() => {
-    fetch(`${API_URL}/python/lessons`)
+  const fetchLessons = useCallback(() => {
+    fetch(`${API_URL}/courses/python/lessons`)
       .then((response) => response.json())
       .then((result) => setLessons(result.data || []))
       .catch(() => setLessons([]));
   }, []);
+
+  useEffect(() => {
+    fetchLessons();
+  }, [fetchLessons]);
+
+  useEffect(
+    () => subscribeToRealtime(["python-lessons:updated"], fetchLessons),
+    [fetchLessons]
+  );
 
   const handlePlay = () => {
     setMensaje(true);

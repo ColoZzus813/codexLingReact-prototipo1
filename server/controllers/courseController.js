@@ -6,6 +6,7 @@ import {
   updateCourse
 } from "../models/courseModel.js";
 import { ApiError } from "../utils/ApiError.js";
+import { broadcastUpdate } from "../utils/realtime.js";
 
 function parseId(id) {
   const parsedId = Number(id);
@@ -43,6 +44,7 @@ export async function getCourseById(req, res, next) {
 export async function postCourse(req, res, next) {
   try {
     const course = await createCourse(req.body);
+    broadcastUpdate("courses:updated", { courseId: course.id });
     res.status(201).json({ data: course });
   } catch (error) {
     next(error);
@@ -51,11 +53,14 @@ export async function postCourse(req, res, next) {
 
 export async function putCourse(req, res, next) {
   try {
-    const course = await updateCourse(parseId(req.params.id), req.body);
+    const courseId = parseId(req.params.id);
+    const course = await updateCourse(courseId, req.body);
 
     if (!course) {
       throw new ApiError(404, "Curso no encontrado.");
     }
+
+    broadcastUpdate("courses:updated", { courseId });
 
     res.json({ data: course });
   } catch (error) {
@@ -65,11 +70,14 @@ export async function putCourse(req, res, next) {
 
 export async function removeCourse(req, res, next) {
   try {
-    const wasDeleted = await deleteCourse(parseId(req.params.id));
+    const courseId = parseId(req.params.id);
+    const wasDeleted = await deleteCourse(courseId);
 
     if (!wasDeleted) {
       throw new ApiError(404, "Curso no encontrado.");
     }
+
+    broadcastUpdate("courses:updated", { courseId, deleted: true });
 
     res.status(204).send();
   } catch (error) {
