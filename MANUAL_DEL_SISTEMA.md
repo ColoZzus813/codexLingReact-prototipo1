@@ -39,6 +39,13 @@ El servidor usa el archivo `.env` para configurar:
 
 Si no se crea `.env`, se usan los valores por defecto definidos en `server/config/env.js`.
 
+El servidor define valores por defecto para:
+
+- `PORT` → `3001`
+- `NODE_ENV` → `development`
+- `CORS_ORIGIN` → `http://localhost:5173,http://localhost:5174,http://localhost:5175`
+- `ADMIN_KEY` → `admin123`
+
 
 ## 5. Estructura del proyecto
 
@@ -86,6 +93,19 @@ También se puede ejecutar sin watch:
 npm run server
 ```
 
+Para iniciar el backend de forma estándar también se puede usar:
+
+```bash
+npm start
+```
+
+### Comandos útiles adicionales
+
+- `npm run build` - Genera el build de producción del frontend con Vite.
+- `npm run preview` - Previsualiza el build de Vite localmente.
+- `npm run lint` - Ejecuta ESLint sobre todo el proyecto.
+- `npm run test:api` - Ejecuta pruebas de endpoints con `server/scripts/testEndpoints.js`.
+
 
 ## 7. API REST disponible
 
@@ -105,6 +125,10 @@ Respuesta esperada:
 }
 ```
 
+### Eventos en tiempo real
+
+- `GET /api/events` - Emite eventos en tiempo real hacia el frontend.
+
 ### Cursos
 
 - `GET /api/courses` - Lista todos los cursos.
@@ -113,21 +137,34 @@ Respuesta esperada:
 - `PUT /api/courses/:id` - Actualiza un curso existente.
 - `DELETE /api/courses/:id` - Elimina un curso.
 
+### Lecciones de curso
+
+- `GET /api/courses/:courseType/lessons` - Lista lecciones para un tipo de curso.
+- `POST /api/courses/:courseType/lessons` - Crea una lección en un curso.
+- `PUT /api/courses/:courseType/lessons/:lessonId` - Actualiza una lección de curso.
+- `DELETE /api/courses/:courseType/lessons/:lessonId` - Elimina una lección de curso.
+- `POST /api/courses/:courseType/lessons/:lessonId/levels` - Crea un nivel en una lección de curso.
+- `PUT /api/courses/:courseType/lessons/:lessonId/levels/:levelId` - Actualiza un nivel de curso.
+- `DELETE /api/courses/:courseType/lessons/:lessonId/levels/:levelId` - Elimina un nivel de curso.
+- `POST /api/courses/:courseType/lessons/:lessonId/levels/:levelId/validate` - Valida código para un nivel de curso.
+
 ### Usuarios
 
 - `POST /api/users/register` - Registra un usuario nuevo.
 - `POST /api/users/login` - Inicia sesión de usuario.
+- `POST /api/users/:id/progress/courses/:courseType/levels` - Marca un nivel de curso como completado para un usuario.
+- `POST /api/users/:id/progress/python-levels` - Marca un nivel Python como completado para un usuario.
 
 ### Lecciones de Python
 
 - `GET /api/python/lessons` - Lista lecciones de Python.
-- `POST /api/python/lessons` - Crea una lección nueva. (Probablemente restringida a admin.)
-- `PUT /api/python/lessons/:lessonId` - Actualiza una lección.
-- `DELETE /api/python/lessons/:lessonId` - Elimina una lección.
-- `POST /api/admin/python-lessons/:lessonId/levels` - Añade un nivel a una lección.
-- `PUT /api/admin/python-lessons/:lessonId/levels/:levelId` - Actualiza un nivel.
-- `DELETE /api/admin/python-lessons/:lessonId/levels/:levelId` - Elimina un nivel.
-- `POST /api/python/:lessonId/levels/:levelId/validate` - Valida código Python para un nivel específico usando Judge0.
+- `POST /api/python/lessons` - Crea una lección nueva.
+- `PUT /api/python/lessons/:id` - Actualiza una lección.
+- `DELETE /api/python/lessons/:id` - Elimina una lección.
+- `POST /api/python/lessons/:lessonId/levels` - Crea un nivel en una lección de Python.
+- `PUT /api/python/lessons/:lessonId/levels/:levelId` - Actualiza un nivel de Python.
+- `DELETE /api/python/lessons/:lessonId/levels/:levelId` - Elimina un nivel de Python.
+- `POST /api/python/lessons/:lessonId/levels/:levelId/validate` - Valida código Python para un nivel específico usando Judge0.
 
 Body para validación:
 
@@ -155,7 +192,7 @@ Respuesta con error:
 }
 ```
 
-**Nota**: Solo funciona si el nivel tiene `requiresValidation: true`. Los datos de `expectedOutput` y `languageId` se obtienen del nivel configurado por el administrador.
+**Nota**: Solo funciona si el nivel tiene `requiresValidation: true`. Los datos de `expectedOutput` y `languageId` se obtienen del nivel configurado por la lección.
 
 ### Administración
 
@@ -165,6 +202,21 @@ Respuesta con error:
 - `DELETE /api/admin/courses/:id` - Elimina un curso como administrador.
 - `PUT /api/admin/users/:id` - Actualiza un usuario.
 - `DELETE /api/admin/users/:id` - Elimina un usuario.
+- `POST /api/admin/user-levels` - Crea un nivel de usuario.
+- `PUT /api/admin/user-levels/:levelId` - Actualiza un nivel de usuario.
+- `DELETE /api/admin/user-levels/:levelId` - Elimina un nivel de usuario.
+- `POST /api/admin/courses/:courseType/lessons` - Crea una lección de curso como admin.
+- `PUT /api/admin/courses/:courseType/lessons/:lessonId` - Actualiza una lección de curso como admin.
+- `DELETE /api/admin/courses/:courseType/lessons/:lessonId` - Elimina una lección de curso como admin.
+- `POST /api/admin/courses/:courseType/lessons/:lessonId/levels` - Crea un nivel de curso como admin.
+- `PUT /api/admin/courses/:courseType/lessons/:lessonId/levels/:levelId` - Actualiza un nivel de curso como admin.
+- `DELETE /api/admin/courses/:courseType/lessons/:lessonId/levels/:levelId` - Elimina un nivel de curso como admin.
+- `POST /api/admin/python-lessons` - Crea una lección de Python como admin.
+- `PUT /api/admin/python-lessons/:lessonId` - Actualiza una lección de Python como admin.
+- `DELETE /api/admin/python-lessons/:lessonId` - Elimina una lección de Python como admin.
+- `POST /api/admin/python-lessons/:lessonId/levels` - Crea un nivel de Python como admin.
+- `PUT /api/admin/python-lessons/:lessonId/levels/:levelId` - Actualiza un nivel de Python como admin.
+- `DELETE /api/admin/python-lessons/:lessonId/levels/:levelId` - Elimina un nivel de Python como admin.
 
 
 ## 8. Panorama funcional
