@@ -1,4 +1,4 @@
-# Manual del Sistema - CodexLing React + API REST
+# Manual técnico - CodexLing React + API REST
 
 ## 1. Descripción general
 
@@ -39,6 +39,16 @@ El servidor usa el archivo `.env` para configurar:
 
 Si no se crea `.env`, se usan los valores por defecto definidos en `server/config/env.js`.
 
+### Base de datos local
+
+- `server/config/database.js` crea automáticamente `server/data/database.json` si no existe.
+- La base de datos utiliza un archivo JSON local con las colecciones:
+  - `users`
+  - `userLevels`
+  - `pythonLessons`
+  - `courseLessons`
+  - `courses`
+- Si el archivo no existe, el servidor lo inicializa con datos predeterminados al arrancar.
 
 ## 5. Estructura del proyecto
 
@@ -54,7 +64,7 @@ Si no se crea `.env`, se usan los valores por defecto definidos en `server/confi
 - `server/app.js`: configuración de Express, middlewares y rutas.
 - `server/index.js`: arranque del servidor y verificación de la base de datos.
 - `server/config/env.js`: variables de entorno y configuración.
-- `server/config/database.js`: inicialización de la base de datos local.
+- `server/config/database.js`: inicializa `server/data/database.json` si no existe y gestiona la lectura/escritura de datos.
 - `server/controllers/`: controladores que ejecutan la lógica de negocio.
 - `server/routes/`: definición de rutas y endpoints.
 - `server/models/`: acceso y gestión de datos persistentes.
