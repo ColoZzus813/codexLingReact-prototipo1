@@ -10,6 +10,7 @@ import PythonCourse from "./assets/pages/PythonCourse";
 import Java from "./assets/pages/Java";
 import Php from "./assets/pages/Php";
 import Admin from "./assets/pages/Admin";
+import Forum from "./assets/pages/Forum";
 import backgroundLogo from "./assets/img/logocodex.png";
 import "./styles/Global.css";
 
@@ -54,12 +55,7 @@ function App() {
           />
         );
       case "foro":
-        return (
-          <SimplePage
-            title="Foro"
-            description="Aqui podras compartir dudas, respuestas y aportes con la comunidad."
-          />
-        );
+        return <Forum setPage={setPage} />;
       case "configuraciones":
         return (
           <SimplePage

@@ -138,6 +138,7 @@ function Header({
   const handleLogout = () => {
     localStorage.removeItem("codexling-user");
     setCurrentUser(null);
+    window.dispatchEvent(new CustomEvent("codexling-user-updated", { detail: null }));
     setAuthMessage("Sesion cerrada correctamente.");
   };
 
@@ -162,8 +163,9 @@ function Header({
         body: JSON.stringify(body)
       });
 
-      setCurrentUser(result.data);
+        setCurrentUser(result.data);
       localStorage.setItem("codexling-user", JSON.stringify(result.data));
+      window.dispatchEvent(new CustomEvent("codexling-user-updated", { detail: result.data }));
       setAuthMessage(result.message);
       resetAuthForm();
     } catch (error) {

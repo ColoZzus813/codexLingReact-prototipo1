@@ -159,6 +159,7 @@ const initialDatabase = {
       }
     ]
   },
+  forumTopics: [],
   courses: [
     {
       id: 1,

@@ -23,6 +23,11 @@ import {
   updateUserLevel
 } from "../models/userLevelModel.js";
 import { deleteUser, findAllPublicUsers, updateUser } from "../models/userModel.js";
+import {
+  deleteForumComment,
+  deleteForumTopic,
+  updateForumTopic
+} from "../models/forumModel.js";
 import { ApiError } from "../utils/ApiError.js";
 import { broadcastUpdate } from "../utils/realtime.js";
 
@@ -411,6 +416,62 @@ export async function deleteAdminPythonLevel(req, res, next) {
     broadcastUpdate("python-lessons:updated", { lessonId, levelId, deleted: true });
 
     res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function updateAdminForumTopic(req, res, next) {
+  try {
+    const topicId = parseId(req.params.topicId);
+    const topic = await updateForumTopic(topicId, req.body);
+
+    if (!topic) {
+      throw new ApiError(404, "Tema no encontrado.");
+    }
+
+    broadcastUpdate("forum:updated", { topicId });
+
+    res.json({ message: "Tema actualizado correctamente.", data: topic });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function deleteAdminForumTopic(req, res, next) {
+  try {
+    const topicId = parseId(req.params.topicId);
+    const wasDeleted = await deleteForumTopic(topicId);
+
+    if (!wasDeleted) {
+      throw new ApiError(404, "Tema no encontrado.");
+    }
+
+    broadcastUpdate("forum:updated", { topicId, deleted: true });
+
+    res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function deleteAdminForumComment(req, res, next) {
+  try {
+    const topicId = parseId(req.params.topicId);
+    const commentId = parseId(req.params.commentId);
+    const result = await deleteForumComment(topicId, commentId);
+
+    if (result.error === "TOPIC_NOT_FOUND") {
+      throw new ApiError(404, "Tema no encontrado.");
+    }
+
+    if (result.error === "COMMENT_NOT_FOUND") {
+      throw new ApiError(404, "Comentario no encontrado.");
+    }
+
+    broadcastUpdate("forum:updated", { topicId, commentId, deleted: true });
+
+    res.json({ message: "Comentario eliminado correctamente.", data: result.topic });
   } catch (error) {
     next(error);
   }

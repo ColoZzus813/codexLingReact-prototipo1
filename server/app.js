@@ -7,6 +7,7 @@ import userRoutes from "./routes/userRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import courseLessonRoutes from "./routes/courseLessonRoutes.js";
 import pythonLessonRoutes from "./routes/pythonLessonRoutes.js";
+import forumRoutes from "./routes/forumRoutes.js";
 import { notFound } from "./middlewares/notFound.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import { realtimeEvents } from "./utils/realtime.js";
@@ -43,6 +44,7 @@ app.use("/api/courses/:courseType/lessons", courseLessonRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/python/lessons", pythonLessonRoutes);
+app.use("/api/forum", forumRoutes);
 app.use("/api/admin", adminRoutes);
 
 // Debug: log all requests hitting API

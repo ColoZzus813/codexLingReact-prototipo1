@@ -20,7 +20,10 @@ import {
   updateAdminPythonLesson,
   updateAdminPythonLevel,
   updateAdminUser,
-  updateAdminUserLevel
+  updateAdminUserLevel,
+  updateAdminForumTopic,
+  deleteAdminForumTopic,
+  deleteAdminForumComment
 } from "../controllers/adminController.js";
 import { requireAdmin } from "../middlewares/requireAdmin.js";
 import { validatePartialCourse } from "../middlewares/validateCourse.js";
@@ -66,5 +69,8 @@ router.put(
   updateAdminPythonLevel
 );
 router.delete("/python-lessons/:lessonId/levels/:levelId", requireAdmin, deleteAdminPythonLevel);
+router.put("/forum/topics/:topicId", requireAdmin, updateAdminForumTopic);
+router.delete("/forum/topics/:topicId", requireAdmin, deleteAdminForumTopic);
+router.delete("/forum/topics/:topicId/comments/:commentId", requireAdmin, deleteAdminForumComment);
 
 export default router;

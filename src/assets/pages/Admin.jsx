@@ -21,7 +21,8 @@ function Admin() {
     courses: [],
     users: [],
     pythonLessons: [],
-    userLevels: []
+    userLevels: [],
+    forumTopics: []
   });
   const [adminSection, setAdminSection] = useState("courses");
   const [selectedCourseId, setSelectedCourseId] = useState("");
@@ -339,6 +340,53 @@ function Admin() {
     }
   };
 
+  const saveForumTopic = async (topic) => {
+    try {
+      const result = await requestJson(`/admin/forum/topics/${topic.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-key": adminKey
+        },
+        body: JSON.stringify({ title: topic.title, body: topic.body })
+      });
+      setMessage(result.message);
+      await fetchAdminData();
+    } catch (error) {
+      setMessage(error.message);
+    }
+  };
+
+  const deleteForumTopic = async (topicId) => {
+    if (!confirm("¿Estás seguro de que quieres eliminar este tema del foro?")) return;
+
+    try {
+      await requestJson(`/admin/forum/topics/${topicId}`, {
+        method: "DELETE",
+        headers: { "x-admin-key": adminKey }
+      });
+      setMessage("Tema eliminado correctamente.");
+      await fetchAdminData();
+    } catch (error) {
+      setMessage(error.message);
+    }
+  };
+
+  const deleteForumComment = async (topicId, commentId) => {
+    if (!confirm("¿Estás seguro de que quieres eliminar este comentario?")) return;
+
+    try {
+      await requestJson(`/admin/forum/topics/${topicId}/comments/${commentId}`, {
+        method: "DELETE",
+        headers: { "x-admin-key": adminKey }
+      });
+      setMessage("Comentario eliminado correctamente.");
+      await fetchAdminData();
+    } catch (error) {
+      setMessage(error.message);
+    }
+  };
+
   const createUserLevel = async (event) => {
     event.preventDefault();
 
@@ -436,6 +484,12 @@ function Admin() {
         onClick={() => setAdminSection("userLevels")}
       >
         Niveles XP
+      </button>
+      <button
+        className={adminSection === "forum" ? "active" : ""}
+        onClick={() => setAdminSection("forum")}
+      >
+        Foro
       </button>
     </div>
   );
@@ -668,6 +722,68 @@ function Admin() {
     </div>
   );
 
+  const renderForumSection = () => (
+    <div className="admin-section">
+      <h2>Gestión del Foro</h2>
+
+      {adminData.forumTopics.length === 0 ? (
+        <p>No hay temas en el foro todavía.</p>
+      ) : (
+        <div className="forum-topics-list">
+          {adminData.forumTopics.map((topic) => (
+            <div key={topic.id} className="forum-record">
+              <h3>Tema #{topic.id}</h3>
+              <label>
+                Título
+                <input
+                  type="text"
+                  value={topic.title || ""}
+                  onChange={(e) => updateAdminField("forumTopics", topic.id, "title", e.target.value)}
+                />
+              </label>
+              <label>
+                Contenido
+                <textarea
+                  value={topic.body || ""}
+                  onChange={(e) => updateAdminField("forumTopics", topic.id, "body", e.target.value)}
+                />
+              </label>
+              <div className="admin-actions">
+                <button onClick={() => saveForumTopic(topic)}>Guardar</button>
+                <button className="delete" onClick={() => deleteForumTopic(topic.id)}>
+                  Eliminar Tema
+                </button>
+              </div>
+
+              <div className="forum-comments">
+                <h4>Comentarios</h4>
+                {topic.comments?.length > 0 ? (
+                  topic.comments.map((comment) => (
+                    <div key={comment.id} className="forum-comment">
+                      <p>
+                        <strong>{comment.authorName}</strong>: {comment.message}
+                      </p>
+                      <span>{new Date(comment.createdAt).toLocaleString()}</span>
+                      <button
+                        className="admin-action-button delete"
+                        type="button"
+                        onClick={() => deleteForumComment(topic.id, comment.id)}
+                      >
+                        Eliminar Comentario
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  <p>No hay comentarios en este tema.</p>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <div className="admin-panel">
       <div className="admin-header">
@@ -687,6 +803,7 @@ function Admin() {
 
       {adminSection === "courses" && renderCoursesSection()}
       {adminSection === "users" && renderUsersSection()}
+      {adminSection === "forum" && renderForumSection()}
       {adminSection === "pythonLessons" && (
         <div className="admin-section">
           <h2>Gestión de Lecciones Python</h2>
