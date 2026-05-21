@@ -264,6 +264,26 @@ function PythonCourse({
     setMessage("Progreso reiniciado.");
   };
 
+  const formatContent = (text) => {
+    if (!text) return null;
+    const normalized = String(text).replace(/\r\n/g, "\n");
+    const paragraphs = normalized.split(/\n{2,}/);
+
+    return paragraphs.map((para, pIndex) => {
+      const lines = para.split("\n");
+      return (
+        <p key={pIndex}>
+          {lines.map((line, i) => (
+            <span key={i}>
+              {line}
+              {i < lines.length - 1 ? <br /> : null}
+            </span>
+          ))}
+        </p>
+      );
+    });
+  };
+
   return (
     <section className="game-course-page">
       <div className="game-course-header">
@@ -341,7 +361,9 @@ function PythonCourse({
                     <h3>{activeLevel.title}</h3>
                     <p>{activeLevel.description}</p>
                     <div className="level-xp-chip">+{activeLevel.xpReward ?? activeLesson.xpReward ?? 10} XP</div>
-                    {activeLevel.content && <div className="level-content-box">{activeLevel.content}</div>}
+                    {activeLevel.content && (
+                      <div className="level-content-box">{formatContent(activeLevel.content)}</div>
+                    )}
 
                     {activeLevel.requiresValidation ? (
                       <div className="code-compiler-section">

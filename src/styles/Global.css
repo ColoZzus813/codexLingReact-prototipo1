@@ -1739,6 +1739,8 @@
         .level-detail-heading p {
             color: rgba(255, 255, 255, 0.78);
             line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
         }
 
         .level-missions {
@@ -1819,6 +1821,8 @@
         .single-level-panel p {
             color: rgba(255, 255, 255, 0.78);
             line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
         }
 
         .level-content-box {
@@ -1828,6 +1832,8 @@
             background: rgba(34, 211, 238, 0.1);
             color: #e0f2fe;
             line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
         }
 
         .mission-card {

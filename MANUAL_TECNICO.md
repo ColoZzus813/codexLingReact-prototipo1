@@ -39,16 +39,12 @@ El servidor usa el archivo `.env` para configurar:
 
 Si no se crea `.env`, se usan los valores por defecto definidos en `server/config/env.js`.
 
-### Base de datos local
+### Base de datos SQL Server
 
-- `server/config/database.js` crea automáticamente `server/data/database.json` si no existe.
-- La base de datos utiliza un archivo JSON local con las colecciones:
-  - `users`
-  - `userLevels`
-  - `pythonLessons`
-  - `courseLessons`
-  - `courses`
-- Si el archivo no existe, el servidor lo inicializa con datos predeterminados al arrancar.
+- `server/config/database.js` crea/verifica la conexión a SQL Server al arrancar.
+- Las credenciales se configuran en `.env` con `SQL_SERVER`, `SQL_USER`, `SQL_PASSWORD` y `SQL_DATABASE`.
+- Si existe `server/data/database.json`, el servidor importa su contenido en SQL Server la primera vez que arranca.
+- No se utiliza SQLite en el proyecto.
 
 ## 5. Estructura del proyecto
 
@@ -64,12 +60,11 @@ Si no se crea `.env`, se usan los valores por defecto definidos en `server/confi
 - `server/app.js`: configuración de Express, middlewares y rutas.
 - `server/index.js`: arranque del servidor y verificación de la base de datos.
 - `server/config/env.js`: variables de entorno y configuración.
-- `server/config/database.js`: inicializa `server/data/database.json` si no existe y gestiona la lectura/escritura de datos.
+- `server/config/database.js`: gestiona la conexión a SQL Server y la lectura/escritura de datos.
 - `server/controllers/`: controladores que ejecutan la lógica de negocio.
 - `server/routes/`: definición de rutas y endpoints.
 - `server/models/`: acceso y gestión de datos persistentes.
-- `server/middlewares/`: middlewares de manejo de errores y rutas no encontradas.
-- `server/data/database.json`: almacenamiento local de datos.
+- `server/data/database.json`: archivo de datos iniciales opcional para importar en SQL Server.
 
 
 ## 6. Cómo ejecutar el sistema

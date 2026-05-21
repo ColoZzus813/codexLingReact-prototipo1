@@ -69,7 +69,11 @@ server/
   utils/
 ```
 
-La base de datos basica se guarda en `server/data/database.json`. La capa de acceso esta en `server/models/courseModel.js`, por lo que se puede cambiar despues por MongoDB, MySQL o SQLite sin alterar controladores y rutas.
+La base de datos se gestiona desde `server/config/database.js` y ahora usa SQL Server con el paquete `mssql`.
+
+La conexión se configura en `.env` usando `SQL_SERVER`, `SQL_USER`, `SQL_PASSWORD` y `SQL_DATABASE`.
+
+La capa de acceso esta en `server/models/courseModel.js`, por lo que se puede cambiar despues por otro motor SQL o NoSQL sin alterar controladores y rutas.
 
 ## Endpoints
 
