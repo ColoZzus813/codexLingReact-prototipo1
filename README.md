@@ -6,6 +6,8 @@ Proyecto React con Vite y backend REST en Node.js + Express para administrar cur
 
 - Node.js 20 o superior
 - npm
+- SQL Server instalado y en ejecucion
+- Un usuario de SQL Server con permisos para crear o usar la base de datos `CodexLing`
 
 ## Instalacion
 
@@ -14,6 +16,74 @@ npm install
 ```
 
 Crea un archivo `.env` tomando como base `.env.example` si quieres cambiar el puerto o el origen permitido por CORS.
+
+## Ejecucion del proyecto
+
+1. Instala las dependencias:
+
+```bash
+npm install
+```
+
+2. Configura las variables de entorno.
+
+Puedes copiar el archivo `.env.example` y ajustarlo segun tu entorno local:
+
+```text
+SQL_SERVER=localhost
+SQL_USER=sa
+SQL_PASSWORD=YourPassword123
+SQL_DATABASE=CodexLing
+PORT=3001
+NODE_ENV=development
+CORS_ORIGIN=http://localhost:5173,http://localhost:5174,http://localhost:5175
+ADMIN_KEY=admin123
+```
+
+3. Inicia el backend en una terminal:
+
+```bash
+npm run dev:server
+```
+
+El backend queda disponible en:
+
+```text
+http://localhost:3001/api
+```
+
+Puedes comprobar que esta funcionando con:
+
+```text
+http://localhost:3001/api/health
+```
+
+4. Inicia el frontend en otra terminal:
+
+```bash
+npm run dev
+```
+
+Vite mostrara la URL local del frontend, normalmente:
+
+```text
+http://localhost:5173
+```
+
+5. Abre el frontend en el navegador y verifica que carguen los cursos.
+
+Para entrar al panel de administrador usa la clave configurada en `.env`:
+
+```text
+ADMIN_KEY=admin123
+```
+
+### Notas de ejecucion
+
+- El backend crea o verifica automaticamente la base de datos `CodexLing`.
+- La informacion principal se guarda en SQL Server dentro de la tabla `app_state`.
+- Si el frontend no puede consumir la API, revisa que el backend este encendido y que `CORS_ORIGIN` incluya la URL donde corre Vite.
+- Para produccion o vista previa del frontend puedes generar el build con `npm run build` y revisarlo con `npm run preview`.
 
 ## Configuración
 
